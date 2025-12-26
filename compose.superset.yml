@@ -1,0 +1,64 @@
+services:
+  superset-db:
+    image: postgres:16
+    container_name: superset-db
+    hostname: superset-db
+    networks: [cluster]
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: superset
+    volumes:
+      - superset_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U superset -d superset >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  superset-redis:
+    image: redis:7
+    container_name: superset-redis
+    hostname: superset-redis
+    networks: [cluster]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  superset:
+    image: apache/superset:latest
+    container_name: superset
+    hostname: superset
+    networks: [cluster]
+    depends_on:
+      superset-db:
+        condition: service_healthy
+      superset-redis:
+        condition: service_healthy
+    ports:
+      - "8090:8088"   # <--- importante: non 8088!
+    environment:
+      SUPERSET_ENV: production
+      SUPERSET_LOAD_EXAMPLES: "no"
+      SUPERSET_SECRET_KEY: "change-me-please"
+      SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://superset:superset@superset-db:5432/superset"
+      REDIS_HOST: superset-redis
+      REDIS_PORT: "6379"
+    volumes:
+      - superset_home:/app/superset_home
+    command: >
+      bash -lc ". /app/.venv/bin/activate &&
+              superset db upgrade &&
+              superset fab create-admin --username admin --firstname admin --lastname admin --email admin@local --password admin || true &&
+              superset init &&
+              /app/docker/entrypoints/run-server.sh"
+
+
+volumes:
+  superset_db_data:
+  superset_home:
+

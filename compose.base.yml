@@ -1,0 +1,92 @@
+name: bda
+
+x-spark-common: &spark_common
+  image: adbgonzalez/spark:3.5.7
+  networks: [cluster]
+
+x-spark-user: &spark_user
+  user: "1000:1000"
+
+services:
+  namenode:
+    <<: *spark_common
+    container_name: namenode
+    hostname: namenode
+    ports:
+      - "${NN_UI_HOST_PORT:-9870}:9870"
+      - "${NN_RPC_HOST_PORT:-9000}:9000"
+    volumes:
+      - namenode_data:/home/hadoop/namenode
+      - ./start-dfs.sh:/start-dfs.sh
+    command: /bin/bash /start-dfs.sh
+
+  datanode:
+    <<: *spark_common
+    container_name: datanode
+    hostname: datanode
+    volumes:
+      - datanode_data:/home/hadoop/datanode/
+    command: hdfs datanode
+
+  resourcemanager:
+    <<: *spark_common
+    container_name: resourcemanager
+    hostname: resourcemanager
+    ports:
+      - "${YARN_UI_HOST_PORT:-8088}:8088"
+    command: yarn resourcemanager
+
+  nodemanager:
+    <<: *spark_common
+    container_name: nodemanager
+    hostname: nodemanager
+    command: yarn nodemanager
+
+  spark-history:
+    <<: [*spark_common, *spark_user]
+    container_name: spark-history
+    hostname: spark-history
+    depends_on: [namenode, resourcemanager]
+    ports:
+      - "${SPARK_HISTORY_HOST_PORT:-18080}:18080"
+    environment:
+      HADOOP_CONF_DIR: /usr/local/hadoop/etc/hadoop
+      SPARK_ROLE: "history"
+      SPARK_LOG_DIR: /opt/spark/logs
+      SPARK_HISTORY_UI_PORT: "18080"
+      SPARK_CONF_DIR: /opt/spark/conf
+      SPARK_EXTRA_CLASSPATH: /opt/spark/jars-extra/*
+    volumes:
+      - ./spark-conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+      - ./start-history.sh:/start-history.sh:ro
+    command: ["bash","-lc","/start-history.sh"]
+
+  notebook:
+    image: adbgonzalez/spark-notebook:3.5.7
+    container_name: spark-notebook
+    hostname: spark-notebook
+    <<: [*spark_user]
+    depends_on: [resourcemanager, datanode]
+    networks: [cluster]
+    ports:
+      - "${JUPYTER_HOST_PORT:-8888}:8888"
+    environment:
+      HADOOP_CONF_DIR: /usr/local/hadoop/etc/hadoop
+      PYSPARK_PYTHON: python3
+      SPARK_CONF_DIR: /opt/spark/conf
+      SPARK_EXTRA_CLASSPATH: /opt/spark/jars-extra/*
+      SHELL: /bin/bash
+    volumes:
+      - ./work:/home/hadoop/work
+      - ./spark-conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    command: >
+      bash -lc "jupyter lab --ip=0.0.0.0 --port=8888
+      --NotebookApp.token='' --NotebookApp.password='' --no-browser"
+
+networks:
+  cluster:
+    driver: bridge
+
+volumes:
+  namenode_data:
+  datanode_data:
