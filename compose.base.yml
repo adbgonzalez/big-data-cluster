@@ -77,7 +77,7 @@ services:
       SPARK_EXTRA_CLASSPATH: /opt/spark/jars-extra/*
       SHELL: /bin/bash
     volumes:
-      - ./work:/home/hadoop/work
+      - ../spark-notebooks:/home/hadoop/work
       - ./spark-conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
     command: >
       bash -lc "jupyter lab --ip=0.0.0.0 --port=8888

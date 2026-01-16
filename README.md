@@ -105,6 +105,35 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 
 ---
 
+## estrutura de traballo recomendada (alumnado)
+
+Este clúster está pensado para usarse xunto cun repositorio separado de notebooks de Spark.
+Para evitar repositorios Git aniñados e facilitar o traballo, **ambos repositorios deben clonarse ao mesmo nivel**, dentro dun cartafol de traballo común.
+
+A estrutura recomendada é a seguinte:
+```bash
+big-data-lab/ ← cartafol de traballo (non é repositorio git)
+├── big-data-cluster/ ← este repositorio
+└── spark-notebooks/ ← repositorio de notebooks de Spark
+```
+
+
+⚠️ **É importante que o cartafol dos notebooks se chame exactamente `spark-notebooks`**, xa que o contedor de Jupyter monta ese directorio como volume.
+
+### clonado dos repositorios
+
+```bash
+mkdir big-data-lab
+cd big-data-lab
+
+git clone https://github.com/adbgonzalez/big-data-cluster big-data-cluster
+git clone https://github.com/adbgonzalez/notebooks-spark-25-26 spark-notebooks
+
+```
+Unha vez clonados os dous repositorios, o clúster debe arrancarse desde o directorio **big-data-cluster/scripts**, tal e como se describe no apartado seguinte.
+
+---
+
 ## inicio rápido (windows)
 
 > en windows, a forma recomendada é usar os scripts `.ps1`.
