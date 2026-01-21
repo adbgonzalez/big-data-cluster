@@ -83,6 +83,10 @@ RUN chown -R hadoop:hadoop ${SPARK_HOME} && \
     chmod -R a+rwX ${SPARK_HOME}/logs
 
 
+COPY conf/yarn-site.xml /usr/local/hadoop/etc/hadoop/yarn-site.xml
+COPY spark-conf/spark-defaults.conf /opt/spark/conf/spark-defaults.conf
+
+
 # --- (opcional) volver ao usuario non root se a base usa 'hadoop' ---
 # Se a imaxe base tiña creado o usuario 'hadoop' (habitual), volve a el:
 USER hadoop
