@@ -31,7 +31,8 @@ services:
       - nifi_content:/opt/nifi/nifi-current/content_repository
       - nifi_provenance:/opt/nifi/nifi-current/provenance_repository
       - nifi_database:/opt/nifi/nifi-current/database_repository
-
+      - ./nifi_extensions:/opt/nifi/nifi-current/nar_extensions
+      - ./conf:/opt/hadoop/conf
 volumes:
   nifi_state:
   nifi_logs:
