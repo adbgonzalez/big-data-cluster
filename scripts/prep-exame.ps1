@@ -1,13 +1,13 @@
-# scripts\prep-exame.ps1
+# scripts\prep-exames-bigdata.ps1
 # Carga as imaxes do tar + arrinca o cluster + importa a caché Ivy no notebook.
 #
 # Requisitos:
-# - Os tar están en: D:\exame
-#   - D:\exame\bda-core-images.tar
-#   - D:\exame\ivy2-offline.tar
+# - Os tar están en: D:\exames-bigdata
+#   - D:\exames-bigdata\bda-core-images.tar
+#   - D:\exames-bigdata\ivy2-offline.tar
 #
 # Execución recomendada (sen cambiar políticas do sistema):
-#   powershell -ExecutionPolicy Bypass -File .\scripts\prep-exame.ps1
+#   powershell -ExecutionPolicy Bypass -File .\scripts\prep-exames-bigdata.ps1
 
 $ErrorActionPreference = "Stop"
 
@@ -17,8 +17,8 @@ Write-Host "== Preparacion do contorno (BDA) =="
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
-# Rutas dos TAR (fixas en D:\exame)
-$tarDir   = "D:\exame"
+# Rutas dos TAR (fixas en D:\exames-bigdata)
+$tarDir   = "D:\exames-bigdata"
 $imagesTar = Join-Path $tarDir "bda-core-images.tar"
 $ivyTar    = Join-Path $tarDir "ivy2-offline.tar"
 
