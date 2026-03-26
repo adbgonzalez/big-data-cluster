@@ -74,31 +74,28 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 ├── kafka/                # recursos e configuración asociados a kafka (se aplica)
 ├── zeppelin/             # recursos / dockerfile de zeppelin (se aplica)
 │
-├── jars/                 # jars auxiliares montados en /opt/spark/jars-extra (evitar blobs grandes)
-├── scripts/              # scripts auxiliares (bash/sh) para utilidades no contedor
-├── work/                 # directorio compartido co host (notebooks, datos, exercicios)
-│
-├── up-base.ps1
-├── up-kafka.ps1
-├── up-minio.ps1
-├── up-nifi.ps1
-├── up-zeppelin.ps1
-├── up-all.ps1
-│
-├── down.ps1
-├── down-v.ps1
-├── down-all.ps1
-│
-├── logs-ui.ps1
-├── logs-kafka.ps1
-├── logs-nifi.ps1
-├── logs-notebook.ps1
-│
-├── ps.ps1
-├── reset-checkpoints.ps1
-├── reset-checkpoints.sh
-├── reset-kafka-topics.ps1
-├── reset-kafka-topics.sh
+├── jars/                 # jars auxiliares para Zeppelin/Spark (volume opcional)
+├── zeppelin-notebooks/   # notebooks persistentes de Zeppelin
+├── scripts/              # scripts .ps1/.sh para arranque, parada e utilidades
+│   ├── up-base.ps1
+│   ├── up-kafka.ps1
+│   ├── up-minio.ps1
+│   ├── up-nifi.ps1
+│   ├── up-zeppelin.ps1
+│   ├── up-all.ps1
+│   ├── down.ps1
+│   ├── down-v.ps1
+│   ├── down-all.ps1
+│   ├── logs-ui.ps1
+│   ├── logs-kafka.ps1
+│   ├── logs-nifi.ps1
+│   ├── logs-notebook.ps1
+│   ├── ps.ps1
+│   ├── prep-exame.ps1
+│   ├── reset-checkpoints.ps1
+│   ├── reset-checkpoints.sh
+│   ├── reset-kafka-topics.ps1
+│   └── reset-kafka-topics.sh
 │
 └── README.md
 ```

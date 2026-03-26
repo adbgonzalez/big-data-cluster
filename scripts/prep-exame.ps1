@@ -1,4 +1,4 @@
-# scripts\prep-exames-bigdata.ps1
+# scripts\prep-exame.ps1
 # Carga as imaxes do tar + arrinca o cluster + importa a caché Ivy no notebook.
 #
 # Requisitos:
@@ -7,7 +7,7 @@
 #   - D:\exames-bigdata\ivy2-offline.tar
 #
 # Execución recomendada (sen cambiar políticas do sistema):
-#   powershell -ExecutionPolicy Bypass -File .\scripts\prep-exames-bigdata.ps1
+#   powershell -ExecutionPolicy Bypass -File .\scripts\prep-exame.ps1
 
 $ErrorActionPreference = "Stop"
 
