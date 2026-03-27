@@ -3,4 +3,5 @@ jars
 mapreduce
 
 zeppelin-notebooks/
-
+airflow/logs/
+context/

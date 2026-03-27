@@ -51,6 +51,7 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 - `compose.minio.yml` → minio (s3)
 - `compose.nifi.yml` → apache nifi (depende de minio e namenode)
 - `compose.superset.yml` → superset + postgres + redis
+- `compose.airflow.yml` → airflow + postgres (orquestración local; integra co clúster base)
 - `compose.zeppelin.yml` → zeppelin integrado con yarn/spark
 
 ---
@@ -70,6 +71,11 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 ├── spark-conf/           # configuración específica de spark (spark-defaults.conf)
 ├── zeppelin-conf/        # configuración de zeppelin (se aplica)
 │
+├── airflow/
+│   ├── dags/             # dags de airflow (bind mount)
+│   ├── config/           # configuración local de airflow (bind mount)
+│   └── plugins/          # plugins personalizados de airflow (bind mount)
+│
 ├── jupyter/              # dockerfile + dependencias do contedor jupyterlab
 ├── kafka/                # recursos e configuración asociados a kafka (se aplica)
 ├── zeppelin/             # recursos / dockerfile de zeppelin (se aplica)
@@ -78,14 +84,18 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 ├── zeppelin-notebooks/   # notebooks persistentes de Zeppelin
 ├── scripts/              # scripts .ps1/.sh para arranque, parada e utilidades
 │   ├── up-base.ps1
+│   ├── init-airflow.ps1
+│   ├── up-airflow.ps1
 │   ├── up-kafka.ps1
 │   ├── up-minio.ps1
 │   ├── up-nifi.ps1
 │   ├── up-zeppelin.ps1
 │   ├── up-all.ps1
+│   ├── down-airflow.ps1
 │   ├── down.ps1
 │   ├── down-v.ps1
 │   ├── down-all.ps1
+│   ├── logs-airflow.ps1
 │   ├── logs-ui.ps1
 │   ├── logs-kafka.ps1
 │   ├── logs-nifi.ps1
@@ -190,6 +200,18 @@ Para consultar logs principais:
 docker compose -f compose.base.yml -f compose.superset.yml up -d
 ```
 
+#### airflow
+```powershell
+.\init-airflow.ps1   # só a primeira vez / tras reset da BD de airflow
+.\up-airflow.ps1     # levanta tamén o clúster base
+.\logs-airflow.ps1
+```
+
+`init-airflow.ps1` executa as migracións da base de datos de Airflow.  
+`up-airflow.ps1` levanta o clúster base (`namenode`, `datanode`, `yarn`, `history`, `notebook`) xunto con `airflow-db`, `airflow-api-server`, `airflow-scheduler` e `airflow-dag-processor`.
+
+O stack de Airflow usa un `jwt_secret` compartido entre servizos para que a Execution API interna funcione correctamente en Airflow 3.
+
 ---
 
 ### 3) levantar todo (base + módulos)
@@ -251,6 +273,17 @@ credenciais por defecto:
 credenciais por defecto:
 - user: `admin`
 - pass: `admin`
+
+### airflow
+| servizo | url | descrición |
+|--------|-----|------------|
+| airflow ui/api | http://localhost:8091 | orquestración local e execución de DAGs |
+
+acceso:
+- sen login (configurado para contorno local de prácticas)
+
+nota:
+- inclúe un DAG mínimo de proba en `airflow/dags/hello_airflow.py`
 
 ---
 

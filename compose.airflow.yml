@@ -1,0 +1,98 @@
+services:
+  airflow-db:
+    image: postgres:16
+    container_name: airflow-db
+    hostname: airflow-db
+    networks: [cluster]
+    environment:
+      POSTGRES_DB: airflow
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+    volumes:
+      - airflow_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  airflow-init:
+    image: apache/airflow:3.1.8
+    container_name: airflow-init
+    hostname: airflow-init
+    user: "${AIRFLOW_UID:-50000}:0"
+    networks: [cluster]
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+    environment: &airflow_env
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-api-server:8080/execution/
+      AIRFLOW__API_AUTH__JWT_SECRET: "bda-airflow-local-jwt-secret-change-me-2026"
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"
+      AIRFLOW_UID: "${AIRFLOW_UID:-50000}"
+      _AIRFLOW_WWW_USER_USERNAME: "${AIRFLOW_USER:-airflow}"
+      _AIRFLOW_WWW_USER_PASSWORD: "${AIRFLOW_PASSWORD:-airflow}"
+    volumes: &airflow_volumes
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
+    command: >
+      bash -lc "mkdir -p /opt/airflow/logs /opt/airflow/dags /opt/airflow/config /opt/airflow/plugins &&
+      airflow db migrate"
+
+  airflow-api-server:
+    image: apache/airflow:3.1.8
+    container_name: airflow-api-server
+    hostname: airflow-api-server
+    restart: unless-stopped
+    user: "${AIRFLOW_UID:-50000}:0"
+    networks: [cluster]
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+    environment:
+      <<: *airflow_env
+    volumes: *airflow_volumes
+    ports:
+      - "${AIRFLOW_HOST_PORT:-8091}:8080"
+    command: api-server
+
+  airflow-scheduler:
+    image: apache/airflow:3.1.8
+    container_name: airflow-scheduler
+    hostname: airflow-scheduler
+    restart: unless-stopped
+    user: "${AIRFLOW_UID:-50000}:0"
+    networks: [cluster]
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+    environment:
+      <<: *airflow_env
+    volumes: *airflow_volumes
+    command: scheduler
+
+  airflow-dag-processor:
+    image: apache/airflow:3.1.8
+    container_name: airflow-dag-processor
+    hostname: airflow-dag-processor
+    restart: unless-stopped
+    user: "${AIRFLOW_UID:-50000}:0"
+    networks: [cluster]
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+    environment:
+      <<: *airflow_env
+    volumes: *airflow_volumes
+    command: dag-processor
+
+volumes:
+  airflow_db_data:
