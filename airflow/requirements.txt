@@ -1,0 +1,1 @@
+apache-airflow-providers-apache-spark==5.5.1

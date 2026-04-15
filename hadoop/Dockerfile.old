@@ -1,0 +1,68 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV HADOOP_VERSION=3.3.6
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV HADOOP_HOME=/usr/local/hadoop
+ENV HADOOP_INSTALL=$HADOOP_HOME
+ENV HADOOP_MAPRED_HOME=$HADOOP_HOME
+ENV HADOOP_COMMON_HOME=$HADOOP_HOME
+ENV HADOOP_HDFS_HOME=$HADOOP_HOME
+ENV HADOOP_YARN_HOME=$HADOOP_HOME
+ENV HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+ENV HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
+ENV HADOOP_CLASSPATH=$HADOOP_HOME/share/hadoop/tools/lib/*
+
+# Instalar paquetes (sen recomendados) e limpar caches NA MESMA CAPA
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      openjdk-11-jdk-headless ssh rsync wget curl net-tools ca-certificates \
+ && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+# Crear usuario/grupo
+RUN groupadd --gid 1000 hadoop \
+ && useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash hadoop
+
+WORKDIR /home/hadoop
+
+# Descargar, extraer e borrar o tarball na MESMA capa
+RUN set -eux; \
+    url="https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz"; \
+    wget -O /tmp/hadoop.tar.gz "$url"; \
+    tar -xzf /tmp/hadoop.tar.gz -C /usr/local/; \
+    mv /usr/local/hadoop-${HADOOP_VERSION} ${HADOOP_HOME}; \
+    rm -f /tmp/hadoop.tar.gz; \
+    chown -R hadoop:hadoop ${HADOOP_HOME}
+
+# Incluímos os JARS para MinIO/S3
+
+RUN set -eux; \
+    mkdir -p "$HADOOP_HOME/share/hadoop/tools/lib"; \
+    BASE_URL="https://repo1.maven.org/maven2"; \
+    # hadoop-aws (mesma versión ca Hadoop)
+    wget -O "$HADOOP_HOME/share/hadoop/tools/lib/hadoop-aws-${HADOOP_VERSION}.jar" \
+      "$BASE_URL/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar"; \
+    # axustar propietario
+    chown -R hadoop:hadoop "$HADOOP_HOME/share/hadoop/tools/lib"
+
+# Dirs de datos
+RUN install -d -o hadoop -g hadoop /home/hadoop/namenode /home/hadoop/datanode
+
+# Config
+COPY conf/core-site.xml $HADOOP_HOME/etc/hadoop/
+COPY conf/hdfs-site.xml $HADOOP_HOME/etc/hadoop/
+COPY conf/mapred-site.xml $HADOOP_HOME/etc/hadoop/
+COPY conf/yarn-site.xml $HADOOP_HOME/etc/hadoop/
+
+USER hadoop
+
+# SSH para pseudo-distribuído
+RUN mkdir -p ~/.ssh \
+ && ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa \
+ && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys \
+ && chmod 700 ~/.ssh \
+ && chmod 600 ~/.ssh/authorized_keys
+
+EXPOSE 8088 8042 9870 9864 9866 8020 9000
+CMD ["bash"]

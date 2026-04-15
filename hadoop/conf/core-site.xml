@@ -1,0 +1,22 @@
+<configuration>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://namenode:9000</value>
+  </property>
+  <property>
+    <name>fs.s3a.access.key</name>
+    <value>${env.MINIO_ROOT_USER}</value>
+  </property>
+  <property>
+    <name>fs.s3a.secret.key</name>
+    <value>${env.MINIO_ROOT_PASSWORD}</value>
+  </property>
+  <property>
+    <name>fs.s3a.endpoint</name>
+    <value>${env.MINIO_ENDPOINT}</value>
+  </property>
+  <property>
+    <name>fs.s3a.path.style.access</name>
+    <value>true</value>
+  </property>
+</configuration>

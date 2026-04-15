@@ -18,12 +18,12 @@ services:
       start_period: 20s
 
   airflow-init:
-    image: apache/airflow:3.1.8
+    image: &airflow_image adbgonzalez/airflow:3.1.8
     container_name: airflow-init
     hostname: airflow-init
-    user: "${AIRFLOW_UID:-50000}:0"
-    networks: [cluster]
-    depends_on:
+    user: &airflow_user "${AIRFLOW_UID:-50000}:0"
+    networks: &airflow_networks [cluster]
+    depends_on: &airflow_depends_on
       airflow-db:
         condition: service_healthy
     environment: &airflow_env
@@ -38,25 +38,28 @@ services:
       AIRFLOW_UID: "${AIRFLOW_UID:-50000}"
       _AIRFLOW_WWW_USER_USERNAME: "${AIRFLOW_USER:-airflow}"
       _AIRFLOW_WWW_USER_PASSWORD: "${AIRFLOW_PASSWORD:-airflow}"
+      HADOOP_CONF_DIR: /opt/hadoop-conf
+      SPARK_CONF_DIR: /opt/spark/conf
+      AIRFLOW_CONN_SPARK_DEFAULT: spark://yarn?deploy-mode=client&spark-binary=%2Fopt%2Fspark%2Fbin%2Fspark-submit
     volumes: &airflow_volumes
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/config:/opt/airflow/config
       - ./airflow/plugins:/opt/airflow/plugins
+      - ./conf:/opt/hadoop-conf:ro
+      - ./spark-conf/spark-defaults-airflow.conf:/opt/spark/conf/spark-defaults.conf:ro
     command: >
       bash -lc "mkdir -p /opt/airflow/logs /opt/airflow/dags /opt/airflow/config /opt/airflow/plugins &&
       airflow db migrate"
 
   airflow-api-server:
-    image: apache/airflow:3.1.8
+    image: *airflow_image
     container_name: airflow-api-server
     hostname: airflow-api-server
     restart: unless-stopped
-    user: "${AIRFLOW_UID:-50000}:0"
-    networks: [cluster]
-    depends_on:
-      airflow-db:
-        condition: service_healthy
+    user: *airflow_user
+    networks: *airflow_networks
+    depends_on: *airflow_depends_on
     environment:
       <<: *airflow_env
     volumes: *airflow_volumes
@@ -65,30 +68,26 @@ services:
     command: api-server
 
   airflow-scheduler:
-    image: apache/airflow:3.1.8
+    image: *airflow_image
     container_name: airflow-scheduler
     hostname: airflow-scheduler
     restart: unless-stopped
-    user: "${AIRFLOW_UID:-50000}:0"
-    networks: [cluster]
-    depends_on:
-      airflow-db:
-        condition: service_healthy
+    user: *airflow_user
+    networks: *airflow_networks
+    depends_on: *airflow_depends_on
     environment:
       <<: *airflow_env
     volumes: *airflow_volumes
     command: scheduler
 
   airflow-dag-processor:
-    image: apache/airflow:3.1.8
+    image: *airflow_image
     container_name: airflow-dag-processor
     hostname: airflow-dag-processor
     restart: unless-stopped
-    user: "${AIRFLOW_UID:-50000}:0"
-    networks: [cluster]
-    depends_on:
-      airflow-db:
-        condition: service_healthy
+    user: *airflow_user
+    networks: *airflow_networks
+    depends_on: *airflow_depends_on
     environment:
       <<: *airflow_env
     volumes: *airflow_volumes

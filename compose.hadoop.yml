@@ -1,0 +1,92 @@
+version: '3'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio-test
+    hostname: minio
+    networks:
+      - hadoop
+    ports:
+      - "${MINIO_TEST_CONSOLE_HOST_PORT:-9101}:9001"
+      - "${MINIO_TEST_API_HOST_PORT:-9102}:9000"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data_test:/data
+
+  namenode:
+    image: adbgonzalez/hadoop:3.4.3
+    container_name: namenode-test
+    hostname: namenode
+    ports:
+      - "10071:50070"
+      - "9000:9000"
+      - "9870:9870"
+    networks:
+      - hadoop
+    volumes:
+      - namenode_data_test:/home/hadoop/namenode
+      - ./hadoop/start-dfs.sh:/start-dfs.sh
+      - ./hadoop/conf:/usr/local/hadoop/etc/hadoop:ro
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+    command: /bin/bash /start-dfs.sh
+
+  datanode:
+    image: adbgonzalez/hadoop:3.4.3
+    container_name: datanode-test
+    hostname: datanode
+    networks:
+      - hadoop
+    volumes:
+      - datanode_data_test:/home/hadoop/datanode/
+      - ./hadoop/conf:/usr/local/hadoop/etc/hadoop:ro
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+    command: hdfs datanode
+
+  resourcemanager:
+    image: adbgonzalez/hadoop:3.4.3
+    container_name: resourcemanager-test
+    hostname: resourcemanager
+    ports:
+      - "8088:8088"
+    networks:
+      - hadoop
+    volumes:
+      - ./hadoop/conf:/usr/local/hadoop/etc/hadoop:ro
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+    command: yarn resourcemanager
+
+  nodemanager:
+    image: adbgonzalez/hadoop:3.4.3
+    container_name: nodemanager-test
+    hostname: nodemanager
+    networks:
+      - hadoop
+    volumes:
+      - ./hadoop/conf:/usr/local/hadoop/etc/hadoop:ro
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+    command: yarn nodemanager
+
+networks:
+  hadoop:
+    driver: bridge
+
+volumes:
+  namenode_data_test:
+  datanode_data_test:
+  minio_data_test:

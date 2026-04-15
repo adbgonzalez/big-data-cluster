@@ -1,4 +1,4 @@
-FROM adbgonzalez/hadoop:3.3.6
+FROM adbgonzalez/hadoop:3.4.3
 
 # --- pasar a root para instalar e preparar Spark ---
 USER root
@@ -14,7 +14,10 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # ---- Spark ----
-ARG SPARK_VERSION=3.5.7
+ARG SPARK_VERSION=4.0.2
+ARG HADOOP_VERSION=3.4.3
+ARG AWS_SDK_V2_BUNDLE_VERSION=2.35.4
+ARG ICEBERG_RUNTIME_VERSION=1.10.1
 ARG SPARK_FILE=spark-${SPARK_VERSION}-bin-without-hadoop.tgz
 ARG SPARK_URL=https://downloads.apache.org/spark/spark-${SPARK_VERSION}/${SPARK_FILE}
 
@@ -30,18 +33,18 @@ RUN wget -q ${SPARK_URL} \
 # ------------------------------------------------------------------
 RUN set -e; \
     mkdir -p /opt/spark/jars-extra; \
-    wget -q -O /opt/spark/jars-extra/hadoop-aws-3.3.6.jar \
-      https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar; \
-    wget -q -O /opt/spark/jars-extra/aws-java-sdk-bundle-1.12.262.jar \
-      https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar; \
-    wget -q -O /opt/spark/jars-extra/iceberg-spark-runtime-3.5_2.12-1.5.0.jar \
-      https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-3.5_2.12/1.5.0/iceberg-spark-runtime-3.5_2.12-1.5.0.jar
+    wget -q -O /opt/spark/jars-extra/hadoop-aws-${HADOOP_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/bundle-${AWS_SDK_V2_BUNDLE_VERSION}.jar \
+      https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/${AWS_SDK_V2_BUNDLE_VERSION}/bundle-${AWS_SDK_V2_BUNDLE_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.0_2.13/${ICEBERG_RUNTIME_VERSION}/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar
 
 
 # variables de entorno (unificadas e sen conflitos)
 ENV HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
 ENV LD_LIBRARY_PATH=${HADOOP_HOME}/lib/native
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV SPARK_CONF=${SPARK_HOME}/conf
 ENV SPARK_LOG_DIR=hdfs:///spark-logs
 ENV SPARK_HISTORY_UI_PORT=18080

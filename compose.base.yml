@@ -1,8 +1,13 @@
 name: bda
 
 x-spark-common: &spark_common
-  image: adbgonzalez/spark:3.5.7
+  image: adbgonzalez/spark:4.0.2
   networks: [cluster]
+
+x-spark-env: &spark_env
+  MINIO_ROOT_USER: "${MINIO_ROOT_USER:-minioadmin}"
+  MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:-minioadmin}"
+  MINIO_ENDPOINT: "${MINIO_ENDPOINT:-http://minio:9000}"
 
 x-spark-user: &spark_user
   user: "1000:1000"
@@ -12,11 +17,12 @@ services:
     <<: *spark_common
     container_name: namenode
     hostname: namenode
+    environment: *spark_env
     ports:
       - "${NN_UI_HOST_PORT:-9870}:9870"
       - "${NN_RPC_HOST_PORT:-9000}:9000"
     volumes:
-      - namenode_data:/home/hadoop/namenode
+      - namenode_data_test:/home/hadoop/namenode
       - ./start-dfs.sh:/start-dfs.sh
     command: /bin/bash /start-dfs.sh
 
@@ -24,14 +30,16 @@ services:
     <<: *spark_common
     container_name: datanode
     hostname: datanode
+    environment: *spark_env
     volumes:
-      - datanode_data:/home/hadoop/datanode/
+      - datanode_data_test:/home/hadoop/datanode/
     command: hdfs datanode
 
   resourcemanager:
     <<: *spark_common
     container_name: resourcemanager
     hostname: resourcemanager
+    environment: *spark_env
     ports:
       - "${YARN_UI_HOST_PORT:-8088}:8088"
     command: yarn resourcemanager
@@ -40,6 +48,7 @@ services:
     <<: *spark_common
     container_name: nodemanager
     hostname: nodemanager
+    environment: *spark_env
     command: yarn nodemanager
 
   spark-history:
@@ -50,6 +59,7 @@ services:
     ports:
       - "${SPARK_HISTORY_HOST_PORT:-18080}:18080"
     environment:
+      <<: *spark_env
       HADOOP_CONF_DIR: /usr/local/hadoop/etc/hadoop
       SPARK_ROLE: "history"
       SPARK_LOG_DIR: /opt/spark/logs
@@ -62,7 +72,7 @@ services:
     command: ["bash","-lc","/start-history.sh"]
 
   notebook:
-    image: adbgonzalez/spark-notebook:3.5.7
+    image: adbgonzalez/spark-notebook:4.0.2
     container_name: spark-notebook
     hostname: spark-notebook
     <<: [*spark_user]
@@ -71,6 +81,7 @@ services:
     ports:
       - "${JUPYTER_HOST_PORT:-8888}:8888"
     environment:
+      <<: *spark_env
       HADOOP_CONF_DIR: /usr/local/hadoop/etc/hadoop
       PYSPARK_PYTHON: python3
       SPARK_CONF_DIR: /opt/spark/conf
@@ -88,5 +99,5 @@ networks:
     driver: bridge
 
 volumes:
-  namenode_data:
-  datanode_data:
+  namenode_data_test:
+  datanode_data_test:
