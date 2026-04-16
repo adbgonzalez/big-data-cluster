@@ -1,7 +1,7 @@
 name: bda
 
 x-spark-common: &spark_common
-  image: adbgonzalez/spark:4.0.2
+  image: adbgonzalez/spark:4.1.1-py312
   networks: [cluster]
 
 x-spark-env: &spark_env
@@ -74,7 +74,7 @@ services:
     command: ["bash","-lc","/start-history.sh"]
 
   notebook:
-    image: adbgonzalez/spark-notebook:4.0.2
+    image: adbgonzalez/spark-notebook:4.1.1-py312
     container_name: spark-notebook
     hostname: spark-notebook
     <<: [*spark_user]

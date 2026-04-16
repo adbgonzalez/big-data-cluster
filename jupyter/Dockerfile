@@ -1,8 +1,6 @@
-FROM adbgonzalez/spark:4.0.2
+FROM adbgonzalez/spark:4.1.1-py312
 
 USER root
-RUN apt-get update && apt-get install -y --no-install-recommends python3-pip && \
-    rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt

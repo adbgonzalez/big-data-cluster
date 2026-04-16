@@ -18,7 +18,7 @@ services:
       - minio_data_test:/data
 
   namenode:
-    image: adbgonzalez/hadoop:3.4.3
+    image: adbgonzalez/hadoop:3.4.3-py312
     container_name: namenode-test
     hostname: namenode
     ports:
@@ -38,7 +38,7 @@ services:
     command: /bin/bash /start-dfs.sh
 
   datanode:
-    image: adbgonzalez/hadoop:3.4.3
+    image: adbgonzalez/hadoop:3.4.3-py312
     container_name: datanode-test
     hostname: datanode
     networks:
@@ -53,7 +53,7 @@ services:
     command: hdfs datanode
 
   resourcemanager:
-    image: adbgonzalez/hadoop:3.4.3
+    image: adbgonzalez/hadoop:3.4.3-py312
     container_name: resourcemanager-test
     hostname: resourcemanager
     ports:
@@ -69,7 +69,7 @@ services:
     command: yarn resourcemanager
 
   nodemanager:
-    image: adbgonzalez/hadoop:3.4.3
+    image: adbgonzalez/hadoop:3.4.3-py312
     container_name: nodemanager-test
     hostname: nodemanager
     networks:

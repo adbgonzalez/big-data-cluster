@@ -17,16 +17,51 @@ ENV HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 ENV HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
 ENV HADOOP_CLASSPATH=$HADOOP_HOME/share/hadoop/tools/lib/*
+ENV PYSPARK_PYTHON=/usr/bin/python3
+ENV PYSPARK_DRIVER_PYTHON=/usr/bin/python3
 
-# Instalar paquetes (sen recomendados) e limpar caches na mesma capa
-RUN apt-get update \
+# Instalar Java e utilidades base
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu|http://azure.archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list \
+ && sed -i '/jammy-backports/d' /etc/apt/sources.list \
+ && apt-get update \
  && apt-get install -y --no-install-recommends \
-      openjdk-${JAVA_MAJOR}-jdk-headless ssh rsync wget curl net-tools ca-certificates \
+      software-properties-common gnupg \
+      openjdk-${JAVA_MAJOR}-jdk-headless \
+      ssh rsync wget curl net-tools ca-certificates \
  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-# Crear usuario/grupo
-RUN groupadd --gid 1000 hadoop \
- && useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash hadoop
+# Engadir Python 3.12 sobre Ubuntu 22.04
+RUN add-apt-repository -y ppa:deadsnakes/ppa \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
+      python3.12 python3.12-venv \
+ && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+# Deixar Python 3.12 como runtime por defecto
+RUN wget -q -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
+ && python3.12 /tmp/get-pip.py \
+ && rm -f /tmp/get-pip.py \
+ && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 \
+ && ln -sf /usr/bin/python3.12 /usr/bin/python
+
+# Crear usuario/grupo reutilizando UID/GID 1000 se xa existen na base
+RUN set -eux; \
+    existing_group="$(getent group 1000 | cut -d: -f1 || true)"; \
+    if [ -n "${existing_group}" ]; then \
+      group_name="${existing_group}"; \
+    else \
+      groupadd --gid 1000 hadoop; \
+      group_name="hadoop"; \
+    fi; \
+    if id -u hadoop >/dev/null 2>&1; then \
+      usermod -g "${group_name}" hadoop; \
+    elif getent passwd 1000 >/dev/null 2>&1; then \
+      existing_user="$(getent passwd 1000 | cut -d: -f1)"; \
+      usermod -l hadoop "${existing_user}"; \
+      usermod -d /home/hadoop -m -g "${group_name}" -s /bin/bash hadoop; \
+    else \
+      useradd --uid 1000 --gid "${group_name}" --create-home --shell /bin/bash hadoop; \
+    fi
 
 WORKDIR /home/hadoop
 
@@ -57,6 +92,8 @@ COPY conf/core-site.xml $HADOOP_HOME/etc/hadoop/
 COPY conf/hdfs-site.xml $HADOOP_HOME/etc/hadoop/
 COPY conf/mapred-site.xml $HADOOP_HOME/etc/hadoop/
 COPY conf/yarn-site.xml $HADOOP_HOME/etc/hadoop/
+COPY conf/capacity-scheduler.xml $HADOOP_HOME/etc/hadoop/
+COPY conf/log4j.properties $HADOOP_HOME/etc/hadoop/
 
 USER hadoop
 

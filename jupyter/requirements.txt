@@ -1,11 +1,11 @@
 # Núcleo científico e Spark
-pyspark==4.0.2
+pyspark==4.1.1
 findspark
 pandas
 numpy
 
 # para compatibilidade con delta
-delta-spark==4.0.1
+delta-spark==4.1.0
 
 # JupyterLab e widgets
 jupyterlab

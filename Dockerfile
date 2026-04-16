@@ -1,4 +1,4 @@
-FROM adbgonzalez/hadoop:3.4.3
+FROM adbgonzalez/hadoop:3.4.3-py312
 
 # --- pasar a root para instalar e preparar Spark ---
 USER root
@@ -6,7 +6,6 @@ USER root
 # Instalar paquetes (sen recomendados) e limpar caches NA MESMA CAPA
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      python3 \
       wget \
       ca-certificates \
       tar \
@@ -14,7 +13,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # ---- Spark ----
-ARG SPARK_VERSION=4.0.2
+ARG SPARK_VERSION=4.1.1
 ARG HADOOP_VERSION=3.4.3
 ARG AWS_SDK_V2_BUNDLE_VERSION=2.35.4
 ARG ICEBERG_RUNTIME_VERSION=1.10.1
@@ -45,6 +44,8 @@ RUN set -e; \
 ENV HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
 ENV LD_LIBRARY_PATH=${HADOOP_HOME}/lib/native
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PYSPARK_PYTHON=/usr/bin/python3
+ENV PYSPARK_DRIVER_PYTHON=/usr/bin/python3
 ENV SPARK_CONF=${SPARK_HOME}/conf
 ENV SPARK_LOG_DIR=hdfs:///spark-logs
 ENV SPARK_HISTORY_UI_PORT=18080
