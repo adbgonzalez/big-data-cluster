@@ -40,7 +40,7 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: "${AIRFLOW_PASSWORD:-airflow}"
       HADOOP_CONF_DIR: /opt/hadoop-conf
       SPARK_CONF_DIR: /opt/spark/conf
-      AIRFLOW_CONN_SPARK_DEFAULT: spark://yarn?deploy-mode=client&spark-binary=%2Fopt%2Fspark%2Fbin%2Fspark-submit
+      AIRFLOW_CONN_SPARK_DEFAULT: spark://yarn?deploy-mode=client&spark-binary=%2Fhome%2Fairflow%2F.local%2Fbin%2Fspark-submit
     volumes: &airflow_volumes
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs

@@ -18,7 +18,7 @@ with DAG(
         task_id="run_spark_submit_job",
         application="/opt/airflow/dags/spark_apps/spark_range_sum.py",
         conn_id="spark_default",
-        spark_binary="/opt/spark/bin/spark-submit",
+        spark_binary="/home/airflow/.local/bin/spark-submit",
         name="airflow-spark-submit-demo",
         env_vars={
             "HADOOP_CONF_DIR": "/opt/hadoop-conf",

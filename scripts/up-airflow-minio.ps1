@@ -1,0 +1,1 @@
+docker compose -f ..\compose.base.yml -f ..\compose.minio.yml -f ..\compose.airflow.yml up -d namenode datanode resourcemanager nodemanager spark-history notebook minio airflow-db airflow-api-server airflow-scheduler airflow-dag-processor

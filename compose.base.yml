@@ -49,6 +49,8 @@ services:
     container_name: nodemanager
     hostname: nodemanager
     environment: *spark_env
+    ports:
+      - "${NM_UI_HOST_PORT:-8042}:8042"
     command: yarn nodemanager
 
   spark-history:
