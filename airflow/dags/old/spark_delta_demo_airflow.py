@@ -7,12 +7,10 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
 
 
 COMMON_CONF = {
-    "spark.submit.deployMode": "client",
     "spark.yarn.appMasterEnv.HADOOP_CONF_DIR": "/opt/hadoop-conf",
     "spark.yarn.appMasterEnv.SPARK_CONF_DIR": "/opt/spark/conf",
     "spark.yarn.appMasterEnv.PYSPARK_PYTHON": "python3",
     "spark.executorEnv.PYSPARK_PYTHON": "python3",
-    "spark.pyspark.python": "python3",
     "spark.hadoop.fs.s3a.endpoint": "http://minio:9000",
     "spark.hadoop.fs.s3a.access.key": "minioadmin",
     "spark.hadoop.fs.s3a.secret.key": "minioadmin",
@@ -22,8 +20,6 @@ COMMON_CONF = {
     "spark.hadoop.fs.s3a.aws.credentials.provider": (
         "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
     ),
-    "spark.hadoop.fs.s3a.input.stream.type": "classic",
-    "spark.hadoop.fs.s3a.change.detection.mode": "none",
     "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
     "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
 }
@@ -31,7 +27,7 @@ COMMON_CONF = {
 
 with DAG(
     dag_id="spark_delta_demo_airflow",
-    description="Smoke test de Delta Lake sobre MinIO en client mode.",
+    description="Smoke test de Delta Lake sobre MinIO.",
     start_date=datetime(2026, 1, 1),
     schedule=None,
     catchup=False,
@@ -42,14 +38,12 @@ with DAG(
         application="/opt/airflow/dags/spark_apps/spark_delta_minio.py",
         conn_id="spark_default",
         spark_binary="/home/airflow/.local/bin/spark-submit",
-        name="airflow-spark-delta-demo-client",
-        deploy_mode="client",
+        name="airflow-spark-delta-demo",
+        deploy_mode="cluster",
         packages="io.delta:delta-spark_2.13:4.1.0",
         conf=COMMON_CONF,
         env_vars={
             "HADOOP_CONF_DIR": "/opt/hadoop-conf",
             "SPARK_CONF_DIR": "/opt/spark/conf",
-            "PYSPARK_PYTHON": "python3",
-            "PYSPARK_DRIVER_PYTHON": "python3",
         },
     )

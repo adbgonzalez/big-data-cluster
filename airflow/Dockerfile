@@ -1,27 +1,31 @@
-FROM apache/airflow:3.1.8
+FROM adbgonzalez/spark:4.1.1-py312 AS spark_runtime
 
-ARG HADOOP_VERSION=3.4.3
-ARG AWS_SDK_V2_BUNDLE_VERSION=2.35.4
-ARG ICEBERG_RUNTIME_VERSION=1.10.1
+FROM apache/airflow:3.1.8
 
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         openjdk-17-jre-headless \
-        wget \
         ca-certificates && \
-    mkdir -p /opt/spark/jars-extra && \
-    wget -q -O /opt/spark/jars-extra/hadoop-aws-${HADOOP_VERSION}.jar \
-        https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar && \
-    wget -q -O /opt/spark/jars-extra/bundle-${AWS_SDK_V2_BUNDLE_VERSION}.jar \
-        https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/${AWS_SDK_V2_BUNDLE_VERSION}/bundle-${AWS_SDK_V2_BUNDLE_VERSION}.jar && \
-    wget -q -O /opt/spark/jars-extra/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar \
-        https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.0_2.13/${ICEBERG_RUNTIME_VERSION}/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+COPY --from=spark_runtime /opt/spark /opt/spark
+COPY --from=spark_runtime /usr/local/hadoop /usr/local/hadoop
+
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV PATH=${JAVA_HOME}/bin:${PATH}
+ENV SPARK_HOME=/opt/spark
+ENV HADOOP_HOME=/usr/local/hadoop
+ENV HADOOP_CONF_DIR=/opt/hadoop-conf
+ENV HADOOP_INSTALL=${HADOOP_HOME}
+ENV HADOOP_MAPRED_HOME=${HADOOP_HOME}
+ENV HADOOP_COMMON_HOME=${HADOOP_HOME}
+ENV HADOOP_HDFS_HOME=${HADOOP_HOME}
+ENV HADOOP_YARN_HOME=${HADOOP_HOME}
+ENV HADOOP_COMMON_LIB_NATIVE_DIR=${HADOOP_HOME}/lib/native
+ENV HADOOP_OPTS=-Djava.library.path=${HADOOP_HOME}/lib/native
+ENV LD_LIBRARY_PATH=${HADOOP_HOME}/lib/native
+ENV PATH=${JAVA_HOME}/bin:${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}
 
 USER airflow
 
