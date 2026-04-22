@@ -1,1 +1,3 @@
 ﻿apache-airflow-providers-apache-spark==5.5.1
+apache-airflow-providers-apache-kafka
+confluent-kafka>=2.6.0

@@ -1,15 +1,17 @@
 # big-data-cluster
 
-Este repositorio contén un **entorno modular de big data en docker compose** pensado para docencia e probas locais.  
-Inclúe un clúster base **hadoop (hdfs + yarn) + spark + jupyterlab**, e módulos opcionais para completar un ecosistema típico de enxeñaría de datos:
+Este repositorio contÃ©n un **entorno modular de big data en docker compose** pensado para docencia e probas locais.  
+InclÃºe un clÃºster base **hadoop (hdfs + yarn) + spark + jupyterlab**, e mÃ³dulos opcionais para completar un ecosistema tÃ­pico de enxeÃ±arÃ­a de datos:
 
 - kafka (+ kafka ui)
 - minio (s3)
 - apache nifi
+- apache airflow
 - apache zeppelin
 - apache superset
 
-O deseño é incremental: primeiro levántase o clúster base e, segundo as necesidades, actívanse os módulos adicionais.
+
+O deseÃ±o Ã© incremental: primeiro levÃ¡ntase o clÃºster base e, segundo as necesidades, actÃ­vanse os mÃ³dulos adicionais.
 
 ---
 
@@ -17,17 +19,20 @@ O deseño é incremental: primeiro levántase o clúster base e, segundo as necesida
 
 Este proxecto usa varias imaxes personalizadas publicadas en docker hub (todas as que comezan por `adbgonzalez`):
 
-- `adbgonzalez/spark:3.5.7`  
-  imaxe base do clúster: hadoop + yarn + spark (inclúe scripts e configuración para executar spark sobre yarn)
+- `adbgonzalez/spark:4.1.1-py312`  
+  imaxe base do clÃºster: hadoop + yarn + spark (inclÃºe scripts e configuraciÃ³n para executar spark sobre yarn)
 
-- `adbgonzalez/spark-notebook:3.5.7`  
-  jupyterlab listo para pyspark, configurado para enviar aplicacións a yarn, con soporte para jars adicionais (`/opt/spark/jars-extra`)
+- `adbgonzalez/spark-notebook:4.1.1-py312`  
+  jupyterlab listo para pyspark, configurado para enviar aplicaciÃ³ns a yarn, con soporte para jars adicionais (`/opt/spark/jars-extra`)
+
+- `adbgonzalez/hadoop:3.4.3-py312`  
+  imaxe base para o stack hadoop legado definido en `compose.hadoop.yml`
 
 - `adbgonzalez/airflow:3.1.8`  
-  imaxe personalizada de Airflow para este stack, preparada para instalar providers adicionais a través de `airflow/requirements.txt`
+  imaxe personalizada de Airflow para este stack, preparada para instalar providers adicionais a travÃ©s de `airflow/requirements.txt`
 
 - `adbgonzalez/kafka:3.9`  
-  kafka en modo kraft (sen zookeeper) cunha configuración simplificada para uso local
+  kafka en modo kraft (sen zookeeper) cunha configuraciÃ³n simplificada para uso local
 
 - `adbgonzalez/zeppelin:0.12.0`  
   zeppelin integrado con yarn + hadoop, e preparado para executar spark como backend
@@ -40,22 +45,22 @@ Este proxecto usa varias imaxes personalizadas publicadas en docker hub (todas a
 
 - windows 10/11 ou linux
 - docker compose v2
-- recomendado: 16 gb ram mínimo (ideal 32 gb)
+- recomendado: 16 gb ram mÃ­nimo (ideal 32 gb)
 - espazo en disco: o uso de volumes persistentes (hdfs/kafka/minio) pode medrar rapidamente
 
 ---
 
-## composición modular do clúster
+## composiciÃ³n modular do clÃºster
 
-O proxecto está dividido en varios ficheiros compose, para activar só o que se precisa:
+O proxecto estÃ¡ dividido en varios ficheiros compose, para activar sÃ³ o que se precisa:
 
-- `compose.base.yml` ? clúster base (hdfs + yarn + spark + jupyter + history server)
-- `compose.kafka.yml` ? kafka + kafka ui (redpanda console)
-- `compose.minio.yml` ? minio (s3)
-- `compose.nifi.yml` ? apache nifi (depende de minio e namenode)
-- `compose.superset.yml` ? superset + postgres + redis
-- `compose.airflow.yml` ? airflow + postgres (orquestración local; integra co clúster base)
-- `compose.zeppelin.yml` ? zeppelin integrado con yarn/spark
+- `compose.base.yml` -> clÃºster base (hdfs + yarn + spark + jupyter + history server)
+- `compose.kafka.yml` -> kafka + kafka ui (redpanda console)
+- `compose.minio.yml` -> minio (s3)
+- `compose.nifi.yml` -> apache nifi (depende de minio e namenode)
+- `compose.superset.yml` -> superset + postgres + redis
+- `compose.airflow.yml` -> airflow + postgres (orquestraciÃ³n local; integra co clÃºster base)
+- `compose.zeppelin.yml` -> zeppelin integrado con yarn/spark
 
 ---
 
@@ -69,49 +74,51 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se p
 +-- compose.nifi.yml
 +-- compose.superset.yml
 +-- compose.zeppelin.yml
-¦
-+-- conf/                 # configuración xml de hadoop (core/hdfs/yarn/mapred)
-+-- spark-conf/           # configuración específica de spark (spark-defaults.conf)
-+-- zeppelin-conf/        # configuración de zeppelin (se aplica)
-¦
+Â¦
++-- conf/                 # configuraciÃ³n xml de hadoop (core/hdfs/yarn/mapred)
++-- spark-conf/           # configuraciÃ³n especÃ­fica de spark (spark-defaults.conf)
++-- zeppelin-conf/        # configuraciÃ³n de zeppelin (se aplica)
+Â¦
 +-- airflow/
-¦   +-- dags/             # dags de airflow (bind mount)
-¦   +-- config/           # configuración local de airflow (bind mount)
-¦   +-- plugins/          # plugins personalizados de airflow (bind mount)
-¦   +-- requirements.txt  # providers/paquetes Python adicionais para a imaxe de Airflow
-¦   +-- Dockerfile        # build da imaxe personalizada de Airflow
-¦
+Â¦   +-- dags/             # dags de airflow (bind mount)
+Â¦   +-- config/           # configuraciÃ³n local de airflow (bind mount)
+Â¦   +-- plugins/          # plugins personalizados de airflow (bind mount)
+Â¦   +-- requirements.txt  # providers/paquetes Python adicionais para a imaxe de Airflow
+Â¦   +-- Dockerfile        # build da imaxe personalizada de Airflow
+Â¦
 +-- jupyter/              # dockerfile + dependencias do contedor jupyterlab
-+-- kafka/                # recursos e configuración asociados a kafka (se aplica)
++-- kafka/                # recursos e configuraciÃ³n asociados a kafka (se aplica)
 +-- zeppelin/             # recursos / dockerfile de zeppelin (se aplica)
-¦
+Â¦
 +-- jars/                 # jars auxiliares para Zeppelin/Spark (volume opcional)
 +-- zeppelin-notebooks/   # notebooks persistentes de Zeppelin
 +-- scripts/              # scripts .ps1/.sh para arranque, parada e utilidades
-¦   +-- up-base.ps1
-¦   +-- init-airflow.ps1
-¦   +-- up-airflow.ps1
-¦   +-- up-kafka.ps1
-¦   +-- up-minio.ps1
-¦   +-- up-nifi.ps1
-¦   +-- up-zeppelin.ps1
-¦   +-- up-all.ps1
-¦   +-- down-airflow.ps1
-¦   +-- down.ps1
-¦   +-- down-v.ps1
-¦   +-- down-all.ps1
-¦   +-- logs-airflow.ps1
-¦   +-- logs-ui.ps1
-¦   +-- logs-kafka.ps1
-¦   +-- logs-nifi.ps1
-¦   +-- logs-notebook.ps1
-¦   +-- ps.ps1
-¦   +-- prep-exame.ps1
-¦   +-- reset-checkpoints.ps1
-¦   +-- reset-checkpoints.sh
-¦   +-- reset-kafka-topics.ps1
-¦   +-- reset-kafka-topics.sh
-¦
+Â¦   +-- up-base.ps1
+Â¦   +-- init-airflow.ps1
+Â¦   +-- up-airflow.ps1
+Â¦   +-- up-airflow-minio.ps1
+Â¦   +-- up-airflow-kafka-minio.ps1
+Â¦   +-- up-kafka.ps1
+Â¦   +-- up-minio.ps1
+Â¦   +-- up-nifi.ps1
+Â¦   +-- up-zeppelin.ps1
+Â¦   +-- up-all.ps1
+Â¦   +-- down-airflow.ps1
+Â¦   +-- down.ps1
+Â¦   +-- down-v.ps1
+Â¦   +-- down-all.ps1
+Â¦   +-- logs-airflow.ps1
+Â¦   +-- logs-ui.ps1
+Â¦   +-- logs-kafka.ps1
+Â¦   +-- logs-nifi.ps1
+Â¦   +-- logs-notebook.ps1
+Â¦   +-- ps.ps1
+Â¦   +-- prep-exame.ps1
+Â¦   +-- reset-checkpoins.ps1
+Â¦   +-- reset-checkpoints.sh
+Â¦   +-- reset-kafka-topics.ps1
+Â¦   +-- reset-kafka.topics.sh
+Â¦
 +-- README.md
 ```
 
@@ -119,18 +126,18 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se p
 
 ## estrutura de traballo recomendada (alumnado)
 
-Este clúster está pensado para usarse xunto cun repositorio separado de notebooks de Spark.
-Para evitar repositorios Git aniñados e facilitar o traballo, **ambos repositorios deben clonarse ao mesmo nivel**, dentro dun cartafol de traballo común.
+Este clÃºster estÃ¡ pensado para usarse xunto cun repositorio separado de notebooks de Spark.
+Para evitar repositorios Git aniÃ±ados e facilitar o traballo, **ambos repositorios deben clonarse ao mesmo nivel**, dentro dun cartafol de traballo comÃºn.
 
-A estrutura recomendada é a seguinte:
+A estrutura recomendada Ã© a seguinte:
 ```bash
-big-data-lab/ ? cartafol de traballo (non é repositorio git)
-+-- big-data-cluster/ ? este repositorio
-+-- spark-notebooks/ ? repositorio de notebooks de Spark
+big-data-lab/ -> cartafol de traballo (non Ã© repositorio git)
++-- big-data-cluster/ -> este repositorio
++-- spark-notebooks/ -> repositorio de notebooks de Spark
 ```
 
 
-?? **É importante que o cartafol dos notebooks se chame exactamente `spark-notebooks`**, xa que o contedor de Jupyter monta ese directorio como volume.
+Importante: **o cartafol dos notebooks debe chamarse exactamente `spark-notebooks`**, xa que o contedor de Jupyter monta ese directorio como volume.
 
 ### clonado dos repositorios
 
@@ -142,15 +149,15 @@ git clone https://github.com/adbgonzalez/big-data-cluster big-data-cluster
 git clone https://github.com/adbgonzalez/notebooks-spark-25-26 spark-notebooks
 
 ```
-Unha vez clonados os dous repositorios, o clúster debe arrancarse desde o directorio **big-data-cluster/scripts**, tal e como se describe no apartado seguinte.
+Unha vez clonados os dous repositorios, o clÃºster debe arrancarse desde o directorio **big-data-cluster/scripts**, tal e como se describe no apartado seguinte.
 
 ---
 
-## inicio rápido (windows)
+## inicio rÃ¡pido (windows)
 
-> en windows, a forma recomendada é usar os scripts `.ps1`.
+> en windows, a forma recomendada Ã© usar os scripts `.ps1`.
 
-### 1) arrancar o clúster base
+### 1) arrancar o clÃºster base
 
 ```powershell
 .\up-base.ps1
@@ -176,7 +183,7 @@ Para consultar logs principais:
 
 ---
 
-### 2) activar módulos opcionais
+### 2) activar mÃ³dulos opcionais
 
 #### kafka + kafka ui
 ```powershell
@@ -206,7 +213,7 @@ docker compose -f compose.base.yml -f compose.superset.yml up -d
 ```
 
 #### airflow
-Antes do primeiro arranque de Airflow ou cando se modifique `airflow/requirements.txt`, hai que construír a imaxe personalizada:
+Antes do primeiro arranque de Airflow ou cando se modifique `airflow/requirements.txt`, hai que construÃ­r a imaxe personalizada:
 
 ```powershell
 docker build -t adbgonzalez/airflow:3.1.8 .\airflow
@@ -215,13 +222,21 @@ docker build -t adbgonzalez/airflow:3.1.8 .\airflow
 Despois:
 
 ```powershell
-.\init-airflow.ps1   # só a primeira vez / tras reset da BD de airflow
-.\up-airflow.ps1     # levanta tamén o clúster base
+.\init-airflow.ps1   # sÃ³ a primeira vez / tras reset da BD de airflow
+.\up-airflow.ps1     # levanta tamÃ©n o clÃºster base
 .\logs-airflow.ps1
 ```
 
-`init-airflow.ps1` executa as migracións da base de datos de Airflow.  
-`up-airflow.ps1` levanta o clúster base (`namenode`, `datanode`, `yarn`, `history`, `notebook`) xunto con `airflow-db`, `airflow-api-server`, `airflow-scheduler` e `airflow-dag-processor`.
+Se ademais queres levantar dependencias frecuentes para os DAGs:
+
+```powershell
+.\up-airflow-minio.ps1
+.\up-airflow-kafka-minio.ps1
+```
+
+`init-airflow.ps1` executa as migraciÃ³ns da base de datos de Airflow.  
+`up-airflow.ps1` levanta o clÃºster base (`namenode`, `datanode`, `yarn`, `history`, `notebook`) xunto con `airflow-db`, `airflow-api-server`, `airflow-scheduler` e `airflow-dag-processor`.
+`up-airflow-minio.ps1` engade tamÃ©n `minio`, e `up-airflow-kafka-minio.ps1` levanta ademais `kafka` e `redpanda-console`.
 
 O stack de Airflow usa un `jwt_secret` compartido entre servizos para que a Execution API interna funcione correctamente en Airflow 3.
 
@@ -229,7 +244,7 @@ A imaxe personalizada de Airflow toma como base `apache/airflow:3.1.8` e instala
 
 ---
 
-### 3) levantar todo (base + módulos)
+### 3) levantar todo (base + mÃ³dulos)
 ```powershell
 .\up-all.ps1
 ```
@@ -238,34 +253,34 @@ A imaxe personalizada de Airflow toma como base `apache/airflow:3.1.8` e instala
 
 ## interfaces web 
 
-### clúster base
-| servizo | url | descrición |
+### clÃºster base
+| servizo | url | descriciÃ³n |
 |--------|-----|------------|
 | jupyterlab | http://localhost:8888 | notebooks con pyspark |
 | hdfs namenode | http://localhost:9870 | navegador de hdfs |
-| yarn resourcemanager | http://localhost:8088 | seguimento de aplicacións |
-| spark history server | http://localhost:18080 | histórico de aplicacións spark |
+| yarn resourcemanager | http://localhost:8088 | seguimento de aplicaciÃ³ns |
+| spark history server | http://localhost:18080 | histÃ³rico de aplicaciÃ³ns spark |
 
 ### kafka
-| servizo | url | descrición |
+| servizo | url | descriciÃ³n |
 |--------|-----|------------|
 | kafka broker | localhost:9092 | acceso desde host |
 | kafka ui | http://localhost:8089 | redpanda console |
 
 ### minio
-| servizo | url | descrición |
+| servizo | url | descriciÃ³n |
 |--------|-----|------------|
-| consola web | http://localhost:9001 | panel de administración |
+| consola web | http://localhost:9001 | panel de administraciÃ³n |
 | api s3 | http://localhost:9002 | endpoint s3 (port 9000 interno) |
 
 credenciais por defecto:
 - user: `minioadmin`
 - pass: `minioadmin`
 
-(pódense cambiar con `MINIO_ROOT_USER` e `MINIO_ROOT_PASSWORD`)
+(pÃ³dense cambiar con `MINIO_ROOT_USER` e `MINIO_ROOT_PASSWORD`)
 
 ### nifi
-| servizo | url | descrición |
+| servizo | url | descriciÃ³n |
 |--------|-----|------------|
 | nifi (https) | https://localhost:9091 | ui web |
 
@@ -273,15 +288,15 @@ credenciais por defecto:
 - user: `admin`
 - pass: `Admin.BDA123!`
 
-(pódense cambiar con `NIFI_USER` e `NIFI_PASS`)
+(pÃ³dense cambiar con `NIFI_USER` e `NIFI_PASS`)
 
 ### zeppelin
-| servizo | url | descrición |
+| servizo | url | descriciÃ³n |
 |--------|-----|------------|
 | zeppelin | http://localhost:8081 | notebooks |
 
 ### superset
-| servizo | url | descrición |
+| servizo | url | descriciÃ³n |
 |--------|-----|------------|
 | superset | http://localhost:8090 | bi e dashboards |
 
@@ -290,20 +305,20 @@ credenciais por defecto:
 - pass: `admin`
 
 ### airflow
-| servizo | url | descrición |
+| servizo | url | descriciÃ³n |
 |--------|-----|------------|
-| airflow ui/api | http://localhost:8091 | orquestración local e execución de DAGs |
+| airflow ui/api | http://localhost:8091 | orquestraciÃ³n local e execuciÃ³n de DAGs |
 
 acceso:
-- sen login (configurado para contorno local de prácticas)
+- sen login (configurado para contorno local de prÃ¡cticas)
 
 nota:
-- inclúe un DAG mínimo de proba en `airflow/dags/hello_airflow.py`
-- pódense engadir providers de Airflow modificando `airflow/requirements.txt` e reconstruíndo a imaxe `adbgonzalez/airflow:3.1.8`
+- inclÃºe un DAG mÃ­nimo de proba en `airflow/dags/hello_airflow.py`
+- pÃ³dense engadir providers de Airflow modificando `airflow/requirements.txt` e reconstruÃ­ndo a imaxe `adbgonzalez/airflow:3.1.8`
 
 ---
 
-## exemplo rápido: spark sobre yarn desde jupyterlab
+## exemplo rÃ¡pido: spark sobre yarn desde jupyterlab
 
 Abre http://localhost:8888 e crea un notebook python.
 
@@ -325,23 +340,23 @@ spark = (
 spark.range(1, 1000000).selectExpr("sum(id)").show()
 ```
 
-O resultado debería aparecer tamén no history server (http://localhost:18080).
+O resultado deberÃ­a aparecer tamÃ©n no history server (http://localhost:18080).
 
 ---
 
-## xestión do clúster
+## xestiÃ³n do clÃºster
 
 ### parar servizos (sen borrar volumes)
 ```powershell
 .\down.ps1
 ```
 
-### parar e borrar volumes (?? elimina datos persistentes)
+### parar e borrar volumes (elimina datos persistentes)
 ```powershell
 .\down-v.ps1
 ```
 
-### parar todo (incluíndo módulos)
+### parar todo (incluÃ­ndo mÃ³dulos)
 ```powershell
 .\down-all.ps1
 ```
@@ -352,7 +367,7 @@ O resultado debería aparecer tamén no history server (http://localhost:18080).
 
 ### reset de checkpoints (streaming)
 ```powershell
-.\reset-checkpoints.ps1
+.\reset-checkpoins.ps1
 ```
 
 ou en linux:
@@ -360,19 +375,19 @@ ou en linux:
 ./reset-checkpoints.sh
 ```
 
-### reset de tópicos kafka
+### reset de tÃ³picos kafka
 ```powershell
 .\reset-kafka-topics.ps1
 ```
 
 ou en linux:
 ```bash
-./reset-kafka-topics.sh
+./reset-kafka.topics.sh
 ```
 
 
 ---
 
-## créditos
+## crÃ©ditos
 
-mantido por **adrián blanco (cifp a carballeira)**
+mantido por **adriÃ¡n blanco (cifp a carballeira)**

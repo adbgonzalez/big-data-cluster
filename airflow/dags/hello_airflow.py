@@ -1,31 +1,19 @@
-from __future__ import annotations
-
 from datetime import datetime
-
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
-
-def say_hello() -> None:
-    print("Airflow DAG de proba executado correctamente.")
-
+def saudar():
+    print("Ola, Airflow!")
 
 with DAG(
     dag_id="hello_airflow",
-    description="DAG minimo para comprobar que Airflow esta operativo.",
     start_date=datetime(2026, 1, 1),
-    schedule="@daily",
+    schedule=None,
     catchup=False,
-    tags=["demo", "sanity-check"],
+    tags=["exemplo","python"],
 ) as dag:
-    start = EmptyOperator(task_id="start")
-
-    hello = PythonOperator(
-        task_id="say_hello",
-        python_callable=say_hello,
+    tarefa_saudar = PythonOperator(
+        task_id="tarefa_saudar",
+        python_callable=saudar,
     )
-
-    end = EmptyOperator(task_id="end")
-
-    start >> hello >> end
+    tarefa_saudar
