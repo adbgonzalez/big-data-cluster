@@ -15,8 +15,14 @@ RUN apt-get update \
 # ---- Spark ----
 ARG SPARK_VERSION=4.1.1
 ARG HADOOP_VERSION=3.4.3
+ARG HADOOP_KAFKA_CLIENT_VERSION=3.4.2
 ARG AWS_SDK_V2_BUNDLE_VERSION=2.35.4
 ARG ICEBERG_RUNTIME_VERSION=1.10.1
+ARG DELTA_VERSION=4.1.0
+ARG KAFKA_CLIENTS_VERSION=3.9.1
+ARG COMMONS_POOL2_VERSION=2.12.1
+ARG JSR305_VERSION=3.0.0
+ARG SCALA_PARALLEL_COLLECTIONS_VERSION=1.2.0
 ARG SPARK_FILE=spark-${SPARK_VERSION}-bin-without-hadoop.tgz
 ARG SPARK_URL=https://downloads.apache.org/spark/spark-${SPARK_VERSION}/${SPARK_FILE}
 
@@ -28,7 +34,7 @@ RUN wget -q ${SPARK_URL} \
  && rm -f ${SPARK_FILE}
 
  # ------------------------------------------------------------------
-# JARs extra (S3A + Iceberg runtime) dentro da imaxe
+# JARs extra (S3A + Iceberg + Delta + Kafka) dentro da imaxe
 # ------------------------------------------------------------------
 RUN set -e; \
     mkdir -p /opt/spark/jars-extra; \
@@ -37,7 +43,27 @@ RUN set -e; \
     wget -q -O /opt/spark/jars-extra/bundle-${AWS_SDK_V2_BUNDLE_VERSION}.jar \
       https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/${AWS_SDK_V2_BUNDLE_VERSION}/bundle-${AWS_SDK_V2_BUNDLE_VERSION}.jar; \
     wget -q -O /opt/spark/jars-extra/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar \
-      https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.0_2.13/${ICEBERG_RUNTIME_VERSION}/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar
+      https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.0_2.13/${ICEBERG_RUNTIME_VERSION}/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/delta-spark_2.13-${DELTA_VERSION}.jar \
+      https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/${DELTA_VERSION}/delta-spark_2.13-${DELTA_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/delta-storage-${DELTA_VERSION}.jar \
+      https://repo1.maven.org/maven2/io/delta/delta-storage/${DELTA_VERSION}/delta-storage-${DELTA_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/spark-sql-kafka-0-10_2.13-${SPARK_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.13/${SPARK_VERSION}/spark-sql-kafka-0-10_2.13-${SPARK_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/spark-token-provider-kafka-0-10_2.13-${SPARK_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.13/${SPARK_VERSION}/spark-token-provider-kafka-0-10_2.13-${SPARK_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/kafka-clients-${KAFKA_CLIENTS_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/${KAFKA_CLIENTS_VERSION}/kafka-clients-${KAFKA_CLIENTS_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/commons-pool2-${COMMONS_POOL2_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/${COMMONS_POOL2_VERSION}/commons-pool2-${COMMONS_POOL2_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/jsr305-${JSR305_VERSION}.jar \
+      https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/${JSR305_VERSION}/jsr305-${JSR305_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/scala-parallel-collections_2.13-${SCALA_PARALLEL_COLLECTIONS_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/scala-lang/modules/scala-parallel-collections_2.13/${SCALA_PARALLEL_COLLECTIONS_VERSION}/scala-parallel-collections_2.13-${SCALA_PARALLEL_COLLECTIONS_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/hadoop-client-runtime-${HADOOP_KAFKA_CLIENT_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/${HADOOP_KAFKA_CLIENT_VERSION}/hadoop-client-runtime-${HADOOP_KAFKA_CLIENT_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/hadoop-client-api-${HADOOP_KAFKA_CLIENT_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/${HADOOP_KAFKA_CLIENT_VERSION}/hadoop-client-api-${HADOOP_KAFKA_CLIENT_VERSION}.jar
 
 
 # variables de entorno (unificadas e sen conflitos)
