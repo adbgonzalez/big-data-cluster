@@ -1,0 +1,23 @@
+services:
+  postgres-serving:
+    image: postgres:16
+    container_name: postgres-serving
+    hostname: postgres-serving
+    networks: [cluster]
+    environment:
+      POSTGRES_DB: gold_serving
+      POSTGRES_USER: gold
+      POSTGRES_PASSWORD: gold
+    ports:
+      - "${POSTGRES_SERVING_HOST_PORT:-5433}:5432"
+    volumes:
+      - postgres_serving_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gold -d gold_serving >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+volumes:
+  postgres_serving_data:

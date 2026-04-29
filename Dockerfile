@@ -23,6 +23,7 @@ ARG KAFKA_CLIENTS_VERSION=3.9.1
 ARG COMMONS_POOL2_VERSION=2.12.1
 ARG JSR305_VERSION=3.0.0
 ARG SCALA_PARALLEL_COLLECTIONS_VERSION=1.2.0
+ARG POSTGRESQL_JDBC_VERSION=42.7.7
 ARG SPARK_FILE=spark-${SPARK_VERSION}-bin-without-hadoop.tgz
 ARG SPARK_URL=https://downloads.apache.org/spark/spark-${SPARK_VERSION}/${SPARK_FILE}
 
@@ -63,7 +64,9 @@ RUN set -e; \
     wget -q -O /opt/spark/jars-extra/hadoop-client-runtime-${HADOOP_KAFKA_CLIENT_VERSION}.jar \
       https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/${HADOOP_KAFKA_CLIENT_VERSION}/hadoop-client-runtime-${HADOOP_KAFKA_CLIENT_VERSION}.jar; \
     wget -q -O /opt/spark/jars-extra/hadoop-client-api-${HADOOP_KAFKA_CLIENT_VERSION}.jar \
-      https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/${HADOOP_KAFKA_CLIENT_VERSION}/hadoop-client-api-${HADOOP_KAFKA_CLIENT_VERSION}.jar
+      https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/${HADOOP_KAFKA_CLIENT_VERSION}/hadoop-client-api-${HADOOP_KAFKA_CLIENT_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/postgresql-${POSTGRESQL_JDBC_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/postgresql/postgresql/${POSTGRESQL_JDBC_VERSION}/postgresql-${POSTGRESQL_JDBC_VERSION}.jar
 
 
 # variables de entorno (unificadas e sen conflitos)
