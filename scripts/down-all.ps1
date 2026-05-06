@@ -1,1 +1,1 @@
-docker compose -f ..\compose.base.yml -f ..\compose.kafka.yml -f ..\compose.minio.yml -f ..\compose.nifi.yml -f ..\compose.airflow.yml -f ..\compose.zeppelin.yml down
+docker compose -f ..\compose.base.yml -f ..\compose.airflow.yml -f ..\compose.hadoop.yml -f ..\compose.kafka.yml -f ..\compose.minio.yml -f ..\compose.nifi.yml -f ..\compose.postgres.yml -f ..\compose.superset.yml -f ..\compose.zeppelin.yml down

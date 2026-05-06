@@ -30,7 +30,7 @@ services:
       start_period: 10s
 
   superset:
-    image: apache/superset:latest
+    image: adbgonzalez/superset:6.0
     container_name: superset
     hostname: superset
     networks: [cluster]
