@@ -44,7 +44,7 @@ Este proxecto usa varias imaxes personalizadas publicadas en docker hub (todas a
 ## requisitos
 
 - windows 10/11, linux ou macOS
-- docker compose v2
+- docker compose v2 
 - recomendado: 16 gb ram mínimo (ideal 32 gb)
 - espazo en disco: o uso de volumes persistentes (hdfs/kafka/seaweedfs) pode medrar rapidamente
 
@@ -149,7 +149,9 @@ git clone https://github.com/adbgonzalez/big-data-cluster big-data-cluster
 git clone https://github.com/adbgonzalez/notebooks-spark-26-27 spark-notebooks
 
 ```
-Unha vez clonados os dous repositorios, o clúster debe arrancarse desde o directorio **big-data-cluster/scripts**, tal e como se describe no apartado seguinte.
+Se xa tiñas clonado o repositorio de notebooks con outro nome, renómeao a `spark-notebooks` (ou, en macos/linux, crea unha ligazón simbólica: `ln -s notebooks-spark-26-27 spark-notebooks`).
+
+Unha vez clonados os dous repositorios, o clúster arráncase cos scripts de **big-data-cluster/scripts**: os `.ps1` en windows e os `.sh` en macos/linux, tal e como se describe nos apartados seguintes.
 
 ---
 
@@ -245,6 +247,40 @@ A imaxe personalizada de Airflow toma como base `apache/airflow:3.1.8` e instala
 ```powershell
 .\up-all.ps1
 ```
+
+---
+
+## inicio rápido (macos / linux)
+
+En macos e linux úsanse os scripts `.sh` de `scripts/`. Son equivalentes un a un aos `.ps1` e pódense executar desde calquera directorio:
+
+```bash
+./scripts/up-base.sh        # clúster base
+./scripts/ps.sh             # contedores activos
+./scripts/logs-notebook.sh  # logs de jupyterlab
+./scripts/up-kafka.sh       # base + kafka
+./scripts/up-all.sh         # base + todos os módulos
+./scripts/down.sh           # parar (mantén volumes)
+```
+
+Airflow, igual que en windows: `./scripts/init-airflow.sh` a primeira vez e despois `./scripts/up-airflow.sh`. Para construír a imaxe personalizada en apple silicon hai que indicar a plataforma, porque a imaxe de spark da que parte só existe para amd64:
+
+```bash
+docker build --platform linux/amd64 -t adbgonzalez/airflow:3.1.8 ./airflow
+```
+
+### rancher desktop (macos)
+
+Probado con rancher desktop en apple silicon. Na configuración (preferences) hai que ter:
+
+- **container engine**: `dockerd (moby)`. Con `containerd` non hai `docker compose`.
+- **virtual machine → emulation**: `VZ` con **rosetta** activado. É o que permite executar as imaxes amd64; con qemu a emulación é moito máis lenta.
+- **virtual machine → volumes**: `virtiofs`.
+- **virtual machine → hardware**: polo menos 12 gb de memoria e 4 cpus. O valor por defecto non chega para o clúster base.
+
+Rancher desktop engade `~/.rd/bin` ao PATH (`docker`, `docker compose`); se nunha terminal non se atopa `docker`, abre unha nova ou engade esa ruta ao `~/.zshrc`.
+
+Con docker desktop o equivalente é activar rosetta en settings → general e asignar memoria de abondo á vm en settings → resources.
 
 ---
 
