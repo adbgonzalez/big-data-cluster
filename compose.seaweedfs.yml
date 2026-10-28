@@ -27,7 +27,7 @@ services:
       AWS_PAGER: ""
     working_dir: /aws
     volumes:
-      - ./data:/aws
+      - ../spark-notebooks/data:/aws
 
 volumes:
   seaweedfs_data:
