@@ -17,7 +17,7 @@ ARG SPARK_VERSION=4.1.1
 ARG HADOOP_VERSION=3.4.3
 ARG HADOOP_KAFKA_CLIENT_VERSION=3.4.2
 ARG AWS_SDK_V2_BUNDLE_VERSION=2.35.4
-ARG ICEBERG_RUNTIME_VERSION=1.10.1
+ARG ICEBERG_RUNTIME_VERSION=1.11.0
 ARG DELTA_VERSION=4.1.0
 ARG KAFKA_CLIENTS_VERSION=3.9.1
 ARG COMMONS_POOL2_VERSION=2.12.1
@@ -43,8 +43,8 @@ RUN set -e; \
       https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar; \
     wget -q -O /opt/spark/jars-extra/bundle-${AWS_SDK_V2_BUNDLE_VERSION}.jar \
       https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/${AWS_SDK_V2_BUNDLE_VERSION}/bundle-${AWS_SDK_V2_BUNDLE_VERSION}.jar; \
-    wget -q -O /opt/spark/jars-extra/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar \
-      https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.0_2.13/${ICEBERG_RUNTIME_VERSION}/iceberg-spark-runtime-4.0_2.13-${ICEBERG_RUNTIME_VERSION}.jar; \
+    wget -q -O /opt/spark/jars-extra/iceberg-spark-runtime-4.1_2.13-${ICEBERG_RUNTIME_VERSION}.jar \
+      https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.1_2.13/${ICEBERG_RUNTIME_VERSION}/iceberg-spark-runtime-4.1_2.13-${ICEBERG_RUNTIME_VERSION}.jar; \
     wget -q -O /opt/spark/jars-extra/delta-spark_2.13-${DELTA_VERSION}.jar \
       https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/${DELTA_VERSION}/delta-spark_2.13-${DELTA_VERSION}.jar; \
     wget -q -O /opt/spark/jars-extra/delta-storage-${DELTA_VERSION}.jar \
