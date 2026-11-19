@@ -11,3 +11,4 @@ airflow/dags/*
 !airflow/dags/.gitkeep
 instrucions_exame.md
 .DS_Store
+entorno_bda

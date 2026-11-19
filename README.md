@@ -26,18 +26,116 @@ Este proxecto usa varias imaxes personalizadas publicadas en docker hub (todas a
   imaxe base do clúster: hadoop + yarn + spark (inclúe scripts e configuración para executar spark sobre yarn)
 
 - `adbgonzalez/spark-notebook:4.1.1-py312`  
-  jupyterlab listo para pyspark, configurado para enviar aplicacións a yarn, con soporte para jars adicionais (`/opt/spark/jars-extra`)
+  jupyterlab listo para pyspark, configurado para enviar aplicacións a yarn, con soporte para jars adicionais (`/opt/spark/jars-extra`) e GX Core 1.25.0 na imaxe local actualizada (publicación pendente)
 
 - `adbgonzalez/hadoop:3.4.3-py312`  
   imaxe base para o stack hadoop legado definido en `compose.hadoop.yml`
 
 - `adbgonzalez/airflow:3.1.8`  
-  imaxe personalizada de Airflow para este stack, preparada para instalar providers adicionais a través de `airflow/requirements.txt`
+  imaxe personalizada de Airflow para este stack, con GX Core 1.25.0 na imaxe local actualizada (publicación pendente) e providers definidos en `airflow/requirements.txt`
 
 - `adbgonzalez/kafka:3.9`  
   kafka en modo kraft (sen zookeeper) cunha configuración simplificada para uso local
 
 > nota: seaweedfs, nifi e superset usan imaxes oficiais (`chrislusf/seaweedfs`, `apache/nifi`, `apache/superset`, etc.).
+
+### construción do notebook con Great Expectations
+
+O Dockerfile de `jupyter/` incorpora GX Core 1.25.0. Para conservar as versións
+do notebook rexistrado antes de engadir GX, usa `jupyter/baseline/constraints-existing.txt`;
+as novas dependencias están fixadas en `jupyter/constraints-gx.txt`. Estes ficheiros
+deben acompañar a `requirements.txt` ao construír a imaxe. O inventario completo
+e a identificación da imaxe anterior están en `jupyter/baseline/notebook-baseline.json`.
+Isto fixa os paquetes Python; a imaxe base de Spark debe ser a mesma que se validou.
+
+O 19 de novembro de 2026, a imaxe con GX quedou como imaxe local habitual coa
+etiqueta `adbgonzalez/spark-notebook:4.1.1-py312`, que xa usan os Compose.
+O usuario confirmou que funcionan os exercicios da unidade 1 probados.
+Tamén se superaron as probas locais sen rede de Jupyter, GX, Iceberg, Delta
+e xeración de informes, conservando as versións de todos os paquetes anteriores.
+
+Pendentes de distribución:
+
+- [ ] Subir a imaxe actualizada `adbgonzalez/spark-notebook:4.1.1-py312` a Docker Hub.
+- [ ] Subir a imaxe actualizada `adbgonzalez/airflow:3.1.8`, con GX e validada sobre YARN, a Docker Hub.
+- [ ] Preparar máis adiante a exportación das imaxes a arquivos para o alumnado.
+
+Ata completar a publicación, Docker Hub pode servir as imaxes anteriores do
+notebook e de Airflow coas mesmas etiquetas. Evitar `docker pull` ou os scripts `update-images` sobre este contorno
+local validado mentres esa subida siga pendente.
+
+Para reconstruír a imaxe habitual:
+
+```bash
+docker build --pull=false --platform linux/amd64 -t adbgonzalez/spark-notebook:4.1.1-py312 ./jupyter
+```
+
+Desde a raíz do repositorio, esta proba en PowerShell comproba as versións e
+executa un kernel Jupyter con Spark local, validacións GX, Iceberg, Delta e informes
+HTML, sen rede nin acceso aos volumes do clúster:
+
+```powershell
+Get-Content -Raw ./scripts/verify-notebook-gx.py | docker run --rm -i --pull never --network none --hostname localhost --mount "type=bind,source=$((Resolve-Path ./jupyter/baseline).Path),target=/baseline,readonly" --entrypoint python3 adbgonzalez/spark-notebook:4.1.1-py312 - /baseline/notebook-baseline.json
+```
+
+Esta proba local non substitúe a execución dos exercicios da unidade 1 sobre YARN
+e os seus almacenamentos antes de distribuír a imaxe ao alumnado.
+
+### construción de Airflow con Great Expectations
+
+O Dockerfile de `airflow/` incorpora GX Core 1.25.0 e PySpark 4.1.1, mantendo
+Airflow 3.1.8. A instalación respecta as constraints oficiais da versión de
+Airflow; `airflow/constraints-gx.txt` fixa as dependencias adicionais que non
+figuran nelas. Non se reutilizan as constraints do notebook.
+
+O 19 de novembro de 2026 a imaxe validada con GX quedou como imaxe local habitual
+coa etiqueta `adbgonzalez/airflow:3.1.8`, que xa usan os Compose. A subida a Docker
+Hub queda pendente. Para reconstruír a imaxe habitual:
+
+```bash
+docker build --pull=false --platform linux/amd64 -t adbgonzalez/airflow:3.1.8 ./airflow
+```
+
+Comprobación local en PowerShell, sen rede nin volumes de datos do clúster:
+
+```powershell
+Get-Content -Raw ./scripts/verify-airflow-gx.py | docker run --rm -i --pull never --network none --hostname localhost --mount "type=bind,source=$((Resolve-Path ./conf).Path),target=/opt/hadoop-conf,readonly" --mount "type=bind,source=$((Resolve-Path ./spark-conf/spark-defaults-airflow.conf).Path),target=/opt/spark/conf/spark-defaults.conf,readonly" --entrypoint python adbgonzalez/airflow:3.1.8 -
+```
+
+O 19 de novembro de 2026 construíuse a candidata e superou esta proba sen rede:
+imports dos providers, dependencias, Spark local, validacións GX, Iceberg e
+informes HTML. Tamén se superaron os dous casos reais sobre YARN descritos
+a continuación. A imaxe habitual actualizada segue pendente de publicar en Docker Hub.
+
+### proba de Airflow con GX sobre YARN
+
+Desde a raíz do repositorio:
+
+```powershell
+.\scripts\up-airflow-gx-validation.ps1
+```
+
+O script usa a imaxe habitual e prepara os DAGs manuais en http://localhost:8091.
+Activar e executar primeiro `gx_yarn_correctos`: debe rematar en verde. Despois,
+executar `gx_yarn_con_erros`: debe rematar en vermello e o log de `validar_iceberg`
+debe indicar `GX_VALIDATION_FAILED`. Un fallo de conexión ou de configuración
+non conta como detección correcta de datos inválidos.
+
+As tarefas crean e len táboas Iceberg sobre HDFS usando Spark sobre YARN.
+Os resultados quedan en `airflow/logs/gx-validation/`, con `result.json` e
+informes HTML. Un pool dunha praza evita executar as dúas tarefas á vez.
+
+Proba confirmada polo usuario o 19 de novembro de 2026: o caso correcto rematou
+con `success: true`, cero regras incumpridas e `GX_VALIDATION_PASSED`
+(`application_1795107096440_0001`). O caso incorrecto detectou as tres regras
+incumpridas, emitiu `GX_VALIDATION_FAILED` e Airflow marcou a tarefa como fallida
+(`application_1795107096440_0002`). Ese fallo é o resultado esperado da proba negativa.
+
+`compose.airflow-gx-validation.yml` utiliza volumes propios para HDFS e a base de
+datos de Airflow; conserva os volumes habituais. O 19 de novembro detectouse que
+o HDFS habitual permanecía en modo seguro, cunha diferenza entre os bloques
+agardados e os comunicados polo DataNode. Non se forzou a súa saída nin se
+borraron datos; esa incidencia queda pendente de revisión separada.
 
 ---
 

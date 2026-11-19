@@ -1,0 +1,832 @@
+{
+    "captured_at_utc":  "2026-11-19T09:39:43.8708165Z",
+    "notebook_image":  {
+                           "reference":  "adbgonzalez/spark-notebook:4.1.1-py312",
+                           "id":  "sha256:2c6286f09952ff0b66afdd0593a1af13f8b830869e6e634e61345e1e4a879539",
+                           "repo_digests":  [
+                                                "adbgonzalez/spark-notebook@sha256:2c6286f09952ff0b66afdd0593a1af13f8b830869e6e634e61345e1e4a879539"
+                                            ],
+                           "created":  "2026-11-03T20:14:28.936092775Z",
+                           "os":  "linux",
+                           "architecture":  "amd64"
+                       },
+    "spark_image_local_reference":  {
+                                        "reference":  "adbgonzalez/spark:4.1.1-py312",
+                                        "id":  "sha256:9acf55a4a29218f160099e9b3caac791875f5265c80afd3060185b5bd04e61a9",
+                                        "repo_digests":  [
+                                                             "adbgonzalez/spark@sha256:9acf55a4a29218f160099e9b3caac791875f5265c80afd3060185b5bd04e61a9"
+                                                         ],
+                                        "created":  "2026-11-03T20:05:32.455567015Z",
+                                        "os":  "linux",
+                                        "architecture":  "amd64"
+                                    },
+    "note":  "A referencia Spark local rexistrase por separado; non acredita a procedencia historica da imaxe notebook.",
+    "environment":  {
+                        "python":  "3.12.13",
+                        "python_executable":  "/usr/bin/python3",
+                        "platform":  "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+                        "packages":  [
+                                         {
+                                             "name":  "anyio",
+                                             "version":  "4.16.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "argon2-cffi",
+                                             "version":  "25.1.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "argon2-cffi-bindings",
+                                             "version":  "26.1.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "arrow",
+                                             "version":  "1.4.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "asttokens",
+                                             "version":  "3.0.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "async-lru",
+                                             "version":  "2.4.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "attrs",
+                                             "version":  "26.1.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "babel",
+                                             "version":  "2.18.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "beautifulsoup4",
+                                             "version":  "4.15.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "bleach",
+                                             "version":  "6.4.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "blinker",
+                                             "version":  "1.4",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "certifi",
+                                             "version":  "2026.10.23",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "cffi",
+                                             "version":  "2.1.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "charset-normalizer",
+                                             "version":  "3.5.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "comm",
+                                             "version":  "0.2.3",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "contourpy",
+                                             "version":  "1.4.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "cryptography",
+                                             "version":  "3.4.8",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "cycler",
+                                             "version":  "0.12.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "dbus-python",
+                                             "version":  "1.2.18",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "debugpy",
+                                             "version":  "1.8.22",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "defusedxml",
+                                             "version":  "0.7.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "delta-spark",
+                                             "version":  "4.1.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "distro",
+                                             "version":  "1.7.0",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "executing",
+                                             "version":  "2.3.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "fastjsonschema",
+                                             "version":  "2.22.3",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "findspark",
+                                             "version":  "2.0.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "fonttools",
+                                             "version":  "4.68.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "fqdn",
+                                             "version":  "1.6.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "h11",
+                                             "version":  "0.16.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "httpcore",
+                                             "version":  "1.0.9",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "httplib2",
+                                             "version":  "0.20.2",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "httpx",
+                                             "version":  "0.28.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "idna",
+                                             "version":  "3.20",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "importlib-metadata",
+                                             "version":  "4.6.4",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "ipykernel",
+                                             "version":  "7.4.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "ipython",
+                                             "version":  "9.18.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "ipython_pygments_lexers",
+                                             "version":  "1.1.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "ipywidgets",
+                                             "version":  "8.1.9",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "isoduration",
+                                             "version":  "20.11.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jedi",
+                                             "version":  "0.20.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jeepney",
+                                             "version":  "0.7.1",
+                                             "installer":  "flit",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "Jinja2",
+                                             "version":  "3.1.6",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "json5",
+                                             "version":  "0.17.3",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jsonpointer",
+                                             "version":  "3.8",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jsonschema",
+                                             "version":  "4.26.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jsonschema-specifications",
+                                             "version":  "2025.9.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyter-events",
+                                             "version":  "0.12.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyter-lsp",
+                                             "version":  "2.3.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyter_builder",
+                                             "version":  "1.2.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyter_client",
+                                             "version":  "8.10.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyter_core",
+                                             "version":  "5.9.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyter_server",
+                                             "version":  "2.21.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyter_server_terminals",
+                                             "version":  "0.5.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyterlab",
+                                             "version":  "4.6.5",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyterlab_pygments",
+                                             "version":  "0.3.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyterlab_server",
+                                             "version":  "2.28.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "jupyterlab_widgets",
+                                             "version":  "3.0.17",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "kafka-python",
+                                             "version":  "3.0.12",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "keyring",
+                                             "version":  "23.5.0",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "kiwisolver",
+                                             "version":  "1.5.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "lark",
+                                             "version":  "1.3.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "launchpadlib",
+                                             "version":  "1.10.16",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "lazr.restfulclient",
+                                             "version":  "0.14.4",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "lazr.uri",
+                                             "version":  "1.0.6",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "MarkupSafe",
+                                             "version":  "3.0.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "matplotlib",
+                                             "version":  "3.11.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "matplotlib-inline",
+                                             "version":  "0.2.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "mistune",
+                                             "version":  "3.4.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "more-itertools",
+                                             "version":  "8.10.0",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "narwhals",
+                                             "version":  "2.28.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "nbclient",
+                                             "version":  "0.11.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "nbconvert",
+                                             "version":  "7.17.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "nbformat",
+                                             "version":  "5.11.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "nest-asyncio2",
+                                             "version":  "1.7.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "notebook",
+                                             "version":  "7.6.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "notebook_shim",
+                                             "version":  "0.2.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "numpy",
+                                             "version":  "2.5.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "oauthlib",
+                                             "version":  "3.2.0",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "packaging",
+                                             "version":  "26.3",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pandas",
+                                             "version":  "3.1.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pandocfilters",
+                                             "version":  "1.5.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "parso",
+                                             "version":  "0.8.7",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pexpect",
+                                             "version":  "4.9.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pillow",
+                                             "version":  "13.0.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pip",
+                                             "version":  "26.0.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "platformdirs",
+                                             "version":  "4.14.3",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "plotly",
+                                             "version":  "7.1.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "prometheus_client",
+                                             "version":  "0.26.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "prompt_toolkit",
+                                             "version":  "3.0.53",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "psutil",
+                                             "version":  "7.2.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "ptyprocess",
+                                             "version":  "0.7.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pure_eval",
+                                             "version":  "0.2.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "py4j",
+                                             "version":  "0.10.9.9",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pycparser",
+                                             "version":  "3.12",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "Pygments",
+                                             "version":  "2.21.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "PyGObject",
+                                             "version":  "3.42.1",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "PyJWT",
+                                             "version":  "2.3.0",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pyparsing",
+                                             "version":  "3.3.3",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pyspark",
+                                             "version":  "4.1.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "python-apt",
+                                             "version":  "2.4.0+ubuntu4.1",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "python-dateutil",
+                                             "version":  "4.0.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "python-json-logger",
+                                             "version":  "4.2.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "PyYAML",
+                                             "version":  "6.0.3",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "pyzmq",
+                                             "version":  "27.2.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "referencing",
+                                             "version":  "0.37.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "requests",
+                                             "version":  "2.34.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "rfc3339-validator",
+                                             "version":  "0.1.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "rfc3986-validator",
+                                             "version":  "0.1.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "rfc3987-syntax",
+                                             "version":  "1.1.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "rpds-py",
+                                             "version":  "2026.9.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "seaborn",
+                                             "version":  "0.13.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "SecretStorage",
+                                             "version":  "3.3.1",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "Send2Trash",
+                                             "version":  "2.1.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "six",
+                                             "version":  "1.16.0",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "soupsieve",
+                                             "version":  "4.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "stack-data",
+                                             "version":  "0.6.3",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "terminado",
+                                             "version":  "0.18.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "tinycss2",
+                                             "version":  "1.5.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "tornado",
+                                             "version":  "6.6",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "traitlets",
+                                             "version":  "5.16.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "typing_extensions",
+                                             "version":  "4.16.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "tzdata",
+                                             "version":  "2026.6",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "uri-template",
+                                             "version":  "1.3.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "urllib3",
+                                             "version":  "2.8.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "wadllib",
+                                             "version":  "1.3.6",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "wcwidth",
+                                             "version":  "0.9.4",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "webcolors",
+                                             "version":  "25.10.0",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "webencodings",
+                                             "version":  "0.6.1",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "websocket-client",
+                                             "version":  "1.9.2",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "widgetsnbextension",
+                                             "version":  "4.0.16",
+                                             "installer":  "pip",
+                                             "direct_url":  null
+                                         },
+                                         {
+                                             "name":  "zipp",
+                                             "version":  "1.0.0",
+                                             "installer":  "",
+                                             "direct_url":  null
+                                         }
+                                     ],
+                        "pip_freeze":  {
+                                           "exit_code":  0,
+                                           "stdout":  "anyio==4.16.0\nargon2-cffi==25.1.0\nargon2-cffi-bindings==26.1.0\narrow==1.4.0\nasttokens==3.0.2\nasync-lru==2.4.0\nattrs==26.1.0\nbabel==2.18.0\nbeautifulsoup4==4.15.0\nbleach==6.4.0\nblinker==1.4\ncertifi==2026.10.23\ncffi==2.1.1\ncharset-normalizer==3.5.2\ncomm==0.2.3\ncontourpy==1.4.0\ncryptography==3.4.8\ncycler==0.12.1\ndbus-python==1.2.18\ndebugpy==1.8.22\ndefusedxml==0.7.1\ndelta-spark==4.1.0\ndistro==1.7.0\nexecuting==2.3.0\nfastjsonschema==2.22.3\nfindspark==2.0.1\nfonttools==4.68.0\nfqdn==1.6.0\nh11==0.16.0\nhttpcore==1.0.9\nhttplib2==0.20.2\nhttpx==0.28.1\nidna==3.20\nimportlib-metadata==4.6.4\nipykernel==7.4.0\nipython==9.18.1\nipython_pygments_lexers==1.1.1\nipywidgets==8.1.9\nisoduration==20.11.0\njedi==0.20.1\njeepney==0.7.1\nJinja2==3.1.6\njson5==0.17.3\njsonpointer==3.8\njsonschema==4.26.0\njsonschema-specifications==2025.9.1\njupyter-events==0.12.1\njupyter-lsp==2.3.1\njupyter_builder==1.2.4\njupyter_client==8.10.0\njupyter_core==5.9.1\njupyter_server==2.21.1\njupyter_server_terminals==0.5.4\njupyterlab==4.6.5\njupyterlab_pygments==0.3.0\njupyterlab_server==2.28.1\njupyterlab_widgets==3.0.17\nkafka-python==3.0.12\nkeyring==23.5.0\nkiwisolver==1.5.1\nlark==1.3.1\nlaunchpadlib==1.10.16\nlazr.restfulclient==0.14.4\nlazr.uri==1.0.6\nMarkupSafe==3.0.4\nmatplotlib==3.11.2\nmatplotlib-inline==0.2.2\nmistune==3.4.0\nmore-itertools==8.10.0\nnarwhals==2.28.0\nnbclient==0.11.0\nnbconvert==7.17.2\nnbformat==5.11.1\nnest-asyncio2==1.7.4\nnotebook==7.6.4\nnotebook_shim==0.2.4\nnumpy==2.5.4\noauthlib==3.2.0\npackaging==26.3\npandas==3.1.0\npandocfilters==1.5.1\nparso==0.8.7\npexpect==4.9.0\npillow==13.0.0\npip==26.0.1\nplatformdirs==4.14.3\nplotly==7.1.0\nprometheus_client==0.26.0\nprompt_toolkit==3.0.53\npsutil==7.2.2\nptyprocess==0.7.0\npure_eval==0.2.4\npy4j==0.10.9.9\npycparser==3.12\nPygments==2.21.0\nPyGObject==3.42.1\nPyJWT==2.3.0\npyparsing==3.3.3\npyspark==4.1.1\npython-apt==2.4.0+ubuntu4.1\npython-dateutil==4.0.0\npython-json-logger==4.2.0\nPyYAML==6.0.3\npyzmq==27.2.0\nreferencing==0.37.0\nrequests==2.34.2\nrfc3339-validator==0.1.4\nrfc3986-validator==0.1.1\nrfc3987-syntax==1.1.0\nrpds-py==2026.9.1\nseaborn==0.13.2\nSecretStorage==3.3.1\nSend2Trash==2.1.0\nsix==1.16.0\nsoupsieve==4.0\nstack-data==0.6.3\nterminado==0.18.1\ntinycss2==1.5.1\ntornado==6.6\ntraitlets==5.16.1\ntyping_extensions==4.16.0\ntzdata==2026.6\nuri-template==1.3.0\nurllib3==2.8.0\nwadllib==1.3.6\nwcwidth==0.9.4\nwebcolors==25.10.0\nwebencodings==0.6.1\nwebsocket-client==1.9.2\nwidgetsnbextension==4.0.16\nzipp==1.0.0",
+                                           "stderr":  ""
+                                       },
+                        "pip_check":  {
+                                          "exit_code":  1,
+                                          "stdout":  "pygobject 3.42.1 requires pycairo, which is not installed.",
+                                          "stderr":  ""
+                                      },
+                        "java":  {
+                                     "exit_code":  0,
+                                     "stdout":  "",
+                                     "stderr":  "openjdk version \"17.0.18\" 2026-01-20\nOpenJDK Runtime Environment (build 17.0.18+8-Ubuntu-122.04.1)\nOpenJDK 64-Bit Server VM (build 17.0.18+8-Ubuntu-122.04.1, mixed mode, sharing)"
+                                 }
+                    }
+}

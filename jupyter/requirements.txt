@@ -22,3 +22,6 @@ notebook
 # kafka
 kafka-python
 requests
+
+# Calidade de datos: conserva as versións actuais mediante os constraints do Dockerfile.
+great_expectations[spark]==1.25.0

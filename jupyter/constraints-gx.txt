@@ -1,0 +1,13 @@
+# Dependencias novas comprobadas con GX 1.25.0 e o notebook actual.
+# As dependencias existentes quedan fixadas en baseline/constraints-existing.txt.
+great_expectations==1.25.0
+altair==6.3.0
+marshmallow==4.4.0
+pydantic==2.14.3
+pydantic_core==2.50.4
+annotated-types==0.8.0
+ruamel.yaml==0.19.1
+scipy==1.18.1
+tqdm==4.70.1
+typing-inspection==0.4.5
+tzlocal==5.4.5

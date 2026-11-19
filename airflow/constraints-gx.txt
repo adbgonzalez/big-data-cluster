@@ -1,0 +1,4 @@
+# Dependencias de GX que non figuran nas constraints oficiais de Airflow 3.1.8.
+# As bibliotecas compartidas conservan as versions das constraints de Airflow.
+altair==6.3.0
+narwhals==2.28.0

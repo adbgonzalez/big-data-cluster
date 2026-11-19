@@ -1,0 +1,71 @@
+Contexto de traballo: GX, Spark e Airflow
+Actualizado: 19 de novembro de 2026.
+
+Obxectivo e preferencias do usuario
+- Preparar o cluster para as proximas unidades sen estragar os exercicios da unidade 1, que ten exame proximo.
+- Unha unica imaxe habitual por servizo. As etiquetas locais de validacion son temporais para facer probas.
+- O usuario prefire explicacions breves e claras, sen exceso de xerga.
+- A exportacion das imaxes a arquivos para o alumnado farase despois.
+- Non subir imaxes a Docker Hub agora: deixar anotada a publicacion pendente.
+- Trino foi estudado e queda aprazado por decision do usuario. Seria unha opcion para o traballo do modulo 5 e non e necesario nos exames. Non esta implementado; non engadir os seus servizos nin migrar os catalogos Iceberg como parte da preparacion actual.
+
+Notebook: rematado e promovido localmente
+- GX Core 1.25.0 incorporado en jupyter/requirements.txt.
+- jupyter/Dockerfile aplica baseline/constraints-existing.txt e constraints-gx.txt.
+- A captura da imaxe anterior esta en jupyter/baseline/: identificacion da imaxe, 131 paquetes e 111 versions de paquetes xestionados por pip.
+- A imaxe construida conserva todas as versions anteriores. Probas sen rede superadas: kernel Jupyter, GX con datos validos e invalidos, Iceberg, Delta e informes HTML.
+- O usuario confirmou que funcionan os exercicios da unidade 1 que probou.
+- Etiqueta habitual local: adbgonzalez/spark-notebook:4.1.1-py312.
+- ID da imaxe actualizada: sha256:51697dbd5ba1282a51e0350f8a64df36f53a0b367b622c29cb8896728efb3555.
+- bda-notebook-gx-validation:local apunta a esa mesma imaxe; non e unha variante distinta.
+- A subida da imaxe actualizada a Docker Hub segue pendente. Un docker pull da etiqueta habitual pode recuperar a version anterior mentres non se publique a nova.
+- O compose temporal compose.gx-validation.yml xa foi eliminado. compose.base.yml usa a etiqueta habitual.
+
+Airflow: primeiro paso rematado
+- Corrixida a referencia ao JAR en spark-conf/spark-defaults-airflow.conf.
+- Agora usa iceberg-spark-runtime-4.1_2.13-1.11.0.jar, igual que Spark e o notebook.
+- Confirmouse que o ficheiro existe na imaxe adbgonzalez/spark:4.1.1-py312.
+- Non se reconstruiron nin actualizaron a imaxe base de Spark ou os seus JARs.
+
+Airflow: GX instalado, validado e promovido localmente
+- airflow/requirements.txt incorpora pyspark==4.1.1 e great_expectations[spark]==1.25.0.
+- airflow/Dockerfile mantense baseado en apache/airflow:3.1.8 e copia o runtime da imaxe Spark actual.
+- A instalacion fixa expresamente apache-airflow==3.1.8 e respecta as constraints oficiais de Airflow para a version de Python da imaxe.
+- airflow/constraints-gx.txt fixa altair==6.3.0 e narwhals==2.28.0, adicionais as constraints oficiais.
+- Non copiar as constraints do notebook a Airflow: empregan versions diferentes de bibliotecas compartidas.
+- Corrixiuse a propiedade dos ficheiros COPY con --chown=airflow:root para poder limpalos como usuario airflow.
+- Construida correctamente a candidata bda-airflow-gx-validation:local.
+- ID da candidata: sha256:4ad0cd92884f90950b1ad71fff64dbce051584a0c0a2e57fea3f8e0d1a7afadf.
+- Base oficial inspeccionada: Airflow 3.1.8, Python 3.12.13, pip check sen erros.
+- A imaxe validada xa ten a etiqueta habitual adbgonzalez/airflow:3.1.8. A subida a Docker Hub segue pendente.
+- bda-airflow-gx-validation:local apunta a esa mesma imaxe, non e unha variante distinta.
+- Os servizos activos xa usaban a mesma imaxe validada; non se reiniciaron para cambiar a etiqueta.
+- scripts/verify-airflow-gx.py comproba imports dos providers, versions, pip check, Spark local, GX, Iceberg e informes HTML.
+- Comprobacion local rematada con exito, sen rede: imports de Airflow e providers, versions fixadas, pip check, GX con datos validos e invalidos, Spark 4.1.1, lectura/escritura de Iceberg e informes HTML.
+- A proba emitiu avisos de Requests sobre versions de chardet/urllib3; pip check non detectou dependencias rotas. Non se modificaron eses paquetes nesta incorporacion de GX.
+
+O que falta
+- Publicar as imaxes actualizadas en Docker Hub cando o usuario o indique.
+- Preparar a exportacion a arquivos e a montaxe offline do escenario do exame mais adiante.
+
+Proba real sobre YARN superada e confirmada polo usuario
+- scripts/up-airflow-gx-validation.ps1 prepara e arranca o escenario.
+- compose.airflow-gx-validation.yml herda a etiqueta habitual de compose.airflow.yml e monta airflow/examples/gx_yarn_validation.py e airflow/jobs/.
+- Airflow arrincou correctamente e rexistrou os DAGs gx_yarn_correctos e gx_yarn_con_erros. Interface en http://localhost:8091.
+- O usuario executou ambos casos e achegou os logs o 19 de novembro de 2026.
+- Caso correcto: success=true, failed_rules=0, master=yarn, GX_VALIDATION_PASSED; application_1795107096440_0001.
+- Caso incorrecto: success=false, failed_rules=3, master=yarn, GX_VALIDATION_FAILED; application_1795107096440_0002. O proceso rematou con codigo 1 e Airflow marcou a tarefa como fallida, tal como se esperaba.
+- A integracion Airflow + Spark sobre YARN + Iceberg + GX queda validada nestes exemplos cos volumes de proba.
+- As tarefas usan SparkSubmitOperator sobre YARN, crean e len Iceberg en HDFS e gardan result.json e informes en airflow/logs/gx-validation/.
+- Pool gx_yarn_validation dunha praza: so unha tarefa de proba de cada vez.
+- Corrixida AIRFLOW_CONN_SPARK_DEFAULT en compose.airflow.yml: spark-binary=spark-submit, porque o provider 5.5.1 rexeita a ruta absoluta que figuraba antes.
+- HDFS habitual quedou en modo seguro: NameNode agardaba 1494 bloques e DataNode comunicaba 516. Non se diagnosticou a causa exacta nin se forzou a saida de modo seguro; non afirmar perda definitiva de datos.
+- Para non tocar eses datos, o overlay de proba usa volumes novos bda_gx_validation_namenode_data, bda_gx_validation_datanode_data e bda_gx_validation_airflow_db_data.
+- Os volumes habituais conservanse. Os contedores agora usan os volumes de proba mentres se arranquen co overlay.
+- Queda pendente revisar separadamente a incidencia do HDFS habitual antes de reutilizar ese almacenamento.
+
+Ficheiros e comprobacions
+- README.md documenta construcion, probas e publicacion pendente do notebook e de Airflow.
+- scripts/snapshot-notebook-dependencies.ps1 e scripts/inspect-python-environment.py rexistran o contorno sen rede.
+- scripts/verify-notebook-gx.py e scripts/verify-airflow-gx.py son probas locais; non substituen as tarefas sobre YARN.
+- Os cambios estan no directorio de traballo e ainda non se fixeron commits.

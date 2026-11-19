@@ -30,7 +30,12 @@ ENV PATH=${JAVA_HOME}/bin:${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:${SPARK_HOME}/b
 USER airflow
 
 ARG AIRFLOW_VERSION=3.1.8
-COPY requirements.txt /tmp/requirements.txt
+COPY --chown=airflow:root requirements.txt /tmp/requirements.txt
+COPY --chown=airflow:root constraints-gx.txt /tmp/constraints-gx.txt
 RUN PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')") && \
     CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt" && \
-    pip install --no-cache-dir --constraint "${CONSTRAINT_URL}" -r /tmp/requirements.txt
+    pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}" \
+      --constraint "${CONSTRAINT_URL}" \
+      --constraint /tmp/constraints-gx.txt \
+      -r /tmp/requirements.txt \
+ && rm /tmp/requirements.txt /tmp/constraints-gx.txt

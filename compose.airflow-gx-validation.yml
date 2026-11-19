@@ -1,0 +1,30 @@
+# Probas coa imaxe habitual de Airflow e almacenamento separado.
+x-gx-validation: &gx_validation
+  volumes:
+    - ./airflow/examples/gx_yarn_validation.py:/opt/airflow/dags/gx_yarn_validation.py:ro
+    - ./airflow/jobs:/opt/airflow/jobs:ro
+
+services:
+  # Fresh test storage; the usual HDFS and Airflow database volumes are preserved.
+  namenode:
+    volumes:
+      - gx_validation_namenode_data:/home/hadoop/namenode
+  datanode:
+    volumes:
+      - gx_validation_datanode_data:/home/hadoop/datanode/
+  airflow-db:
+    volumes:
+      - gx_validation_airflow_db_data:/var/lib/postgresql/data
+  airflow-init:
+    <<: *gx_validation
+  airflow-api-server:
+    <<: *gx_validation
+  airflow-scheduler:
+    <<: *gx_validation
+  airflow-dag-processor:
+    <<: *gx_validation
+
+volumes:
+  gx_validation_namenode_data:
+  gx_validation_datanode_data:
+  gx_validation_airflow_db_data:
