@@ -69,3 +69,50 @@ Ficheiros e comprobacions
 - scripts/snapshot-notebook-dependencies.ps1 e scripts/inspect-python-environment.py rexistran o contorno sen rede.
 - scripts/verify-notebook-gx.py e scripts/verify-airflow-gx.py son probas locais; non substituen as tarefas sobre YARN.
 - Os cambios estan no directorio de traballo e ainda non se fixeron commits.
+
+Distribucion offline por exames (19/11/2026)
+- Destino nos equipos: D:\entorno_bda, con images e big-data-lab\big-data-cluster + big-data-lab\spark-notebooks.
+- Preparacion local: entorno_bda dentro deste repositorio (cartafol ignorado por Git).
+- O usuario pediu separar os arquivos: exame1-images.tar (Spark, notebook, PostgreSQL, SeaweedFS, AWS CLI); exame2-images.tar (Kafka e Redpanda Console); exame3-images.tar (Airflow, Superset e Redis).
+- PostgreSQL compartese desde o Exame 1; os grupos 2 e 3 complementan o escenario base.
+- Nifi e Trino quedan fora dos TAR. Nifi chegou a descargarse antes da separacion, pero non se exporta.
+- scripts/export-images-offline.ps1 exporta os tres grupos, rexistra IDs e calcula SHA256. Usa as imaxes locais existentes e so descarga as que faltan.
+- A exportacion conxunta anterior foi parada por orde do usuario e eliminouse o seu arquivo temporal incompleto.
+- Exportacion dos tres grupos rematada: exame1-images.tar 4914021376 bytes; exame2-images.tar 340291072 bytes; exame3-images.tar 3810053632 bytes.
+- Cada grupo ten exameN-manifest.json con etiquetas e IDs; SHA256SUMS.txt rexistra as sumas dos tres TAR. README.md en images explica carga offline e dependencias.
+- Comprobados os tres TAR: etiquetas exactas, IDs OCI e presenza de todas as capas. Confirmadas as tres entradas de SHA256SUMS.txt e a ausencia de arquivos parciais.
+- As carpetas big-data-lab do paquete ainda non tenhen o workspace copiado; esta fase prepara as imaxes.
+
+Punto de retomada tras gardar contexto
+- Ultima peticion executada: incorporar Redis ao Exame 3 e crear os tres TAR separados. Rematado e comunicado ao usuario.
+- Pendente da distribucion: preparar a copia do workspace e os notebooks (poden ser especificos do exame), o script de carga local por grupos e as instrucions xerais. O README de images xa conten comandos manuais docker load.
+- Non reutilizar directamente scripts/prep-exame.ps1: e o script antigo, apunta a D:\exames-bigdata e require unha cache Ivy separada. Hai que adaptalo ao escenario actual cando se aborde ese paso.
+- scripts/up-all.ps1 inclue NiFi: non encaixa directamente cos paquetes acordados, que o excluen. Preparar o arranque dos modulos correspondentes sen descargas (--pull never --no-build).
+- Non se probou docker load nun equipo limpo nin o arranque completo offline cos novos paquetes. A comprobacion realizada foi do contido dos TAR e dos identificadores; non afirmar unha proba completa de instalacion.
+- Manter as imaxes habituais validadas e non cambiar versions, JARs ou volumes para preparar a distribucion. Trino segue aprazado.
+- O usuario prefire avanzar paso a paso e pediu expresamente non acelerarse. Non iniciar os seguintes pasos so por ler este contexto.
+- Estado Git ao gardar: CONTEXTO-GX.txt modificado e scripts/export-images-offline.ps1 novo sen seguimento. Non se fixo commit nesta tarefa. entorno_bda esta ignorado, polo que os TAR e o README do paquete non se gardan en Git.
+
+Paquete preparado para proba do profesor (24/11/2026)
+- instrucions_exame.md pasa a ser indice de instrucions_exame1.md, instrucions_exame2.md e instrucions_exame3.md. Eliminada a copia de Ivy; arranques con --pull never --no-build.
+- scripts/prepare-offline-workspace.ps1 prepara entorno_bda sen arrancar Docker nin tocar volumes. Executado correctamente.
+- entorno_bda xa conten os tres TAR previos, guias na raiz, LEME.md, configuracion runtime en big-data-lab/big-data-cluster e copia dos notebooks e datos en big-data-lab/spark-notebooks.
+- Copia para probas do profesor: inclue exemplos, probas e solucions actuais; a seleccion para o alumnado segue pendente. Excluidos .git, papeleiras, checkpoints, caches Python e logs de Airflow anteriores.
+- Engadido 00-comprobar-contorno.ipynb no paquete para comprobar master=yarn e count=10.
+- Verificados por hash os 94 ficheiros copiados dos notebooks; notebook de comprobacion parseado e tres combinacions Compose do paquete validadas con config --quiet. Total aproximado do paquete: 8.48 GiB.
+- Non se executou docker load nin se arrancou o paquete; a proba completa queda a cargo do usuario hoxe.
+- O paquete conserva o nome de proxecto bda e os volumes habituais: copiar a D: non illa Docker. LEME.md explica que para unha proba limpa debe usarse outro equipo sen ese contorno, dada a incidencia pendente do HDFS habitual.
+- Non se fixeron commits. Os ficheiros de entorno_bda seguen ignorados por Git.
+- Axuste posterior solicitado polo usuario: retirado spark-notebooks/probas do paquete, conservando o orixinal. O script de preparacion exclue ese cartafol; comprobado tras volver executalo. Mantense o material de exemplos e tarefas para consulta do alumnado. LEME.md actualizado.
+
+Ultimos cambios e punto de retomada (24/11/2026)
+- O usuario confirmou que o alumnado pode consultar os exemplos; so pediu retirar o cartafol probas. Xa retirado do paquete, non do workspace orixinal.
+- O usuario engadiu persoalmente labs ao paquete. Eses cambios estan dentro de entorno_bda, ignorado por Git, e poden non existir no spark-notebooks orixinal. Non reconstruir nin sobrescribir o paquete sen preservar esas incorporacions.
+- Por peticion do usuario, convertido entorno_bda/big-data-lab/spark-notebooks/01-almacenamiento/labs/lab-03-s3-seaweed.md a lab-03-s3-seaweed.ipynb no mesmo cartafol. Conserveuse o Markdown orixinal.
+- O notebook ten 5 celas Python executables e 6 celas Markdown; os comandos PowerShell quedan como texto para executar no host. Comprobada a estrutura JSON e a igualdade dos bloques Python co orixinal. Non se executou o lab.
+- Revisadas as referencias de imaxes locais en Markdown e celas Markdown dos notebooks do paquete. Faltaban 3 PNG, usados tanto polo .md como polo .ipynb do lab de SeaweedFS.
+- Copiados desde C:/repo/bda/01.storage/images ao cartafol entorno_bda/big-data-lab/spark-notebooks/01-almacenamiento/images: seaweedfs-web-ui-inicio.png, seaweedfs-web-ui-bucket-spark.png e seaweedfs-aws-cli-spark.png. Verificados por hash. Non se detectaron outras imaxes locais referenciadas ausentes na revision.
+- A revision das imaxes non valida outros enlaces do lab (temas, tarefas ou datos); non afirmar que todos os enlaces dos materiais estan comprobados.
+- O paquete esta listo para que o usuario o copie a D:/entorno_bda e faga a proba. O notebook do exame e os seus ficheiros poderan colocarse en big-data-lab/spark-notebooks e apareceran en Jupyter.
+- Mantense pendente a proba completa de carga e arranque nun equipo limpo. Non se arrancaron servizos nin se tocaron volumes durante esta preparacion. Non se publicaron imaxes nin se fixeron commits.
+- Ultima peticion: gardar contexto e rematar a sesion. Non iniciar novas tarefas automaticamente.
